@@ -39,6 +39,8 @@ public class DeptDto extends BaseDTO implements Serializable {
 
     private Integer deptSort;
 
+    private Float preRate;
+
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<DeptDto> children;
 

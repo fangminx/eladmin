@@ -56,6 +56,10 @@ public class Dept extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "部门名称")
     private String name;
 
+    @Column(name = "pre_rate",nullable = false)
+    @ApiModelProperty(value = "部门在位率")
+    private Float preRate;
+
     @NotNull
     @ApiModelProperty(value = "是否启用")
     private Boolean enabled;
