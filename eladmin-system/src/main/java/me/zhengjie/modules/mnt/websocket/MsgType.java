@@ -27,5 +27,9 @@ public enum MsgType {
 	/** 信息 */
 	INFO,
 	/** 错误 */
-	ERROR
+	ERROR,
+	/** 前端弹出框用，要小写 */
+	success,
+	/** 前端弹出框用，要小写 */
+	error
 }
