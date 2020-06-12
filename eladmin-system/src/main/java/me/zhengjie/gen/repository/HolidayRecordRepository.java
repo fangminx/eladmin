@@ -22,7 +22,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 public interface HolidayRecordRepository extends JpaRepository<HolidayRecord, Long>, JpaSpecificationExecutor<HolidayRecord> {
 }

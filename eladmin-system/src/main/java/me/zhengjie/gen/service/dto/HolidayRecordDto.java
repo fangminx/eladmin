@@ -16,8 +16,15 @@
 package me.zhengjie.gen.service.dto;
 
 import lombok.Data;
+
+import java.sql.Array;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
@@ -25,7 +32,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 * @website https://el-admin.vip
 * @description /
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 @Data
 public class HolidayRecordDto implements Serializable {
@@ -40,11 +47,15 @@ public class HolidayRecordDto implements Serializable {
     /** 部门名称 */
     private String deptName;
 
+    /** 时间范围 */
+    @JsonSerialize(using= ToStringSerializer.class)
+    private String[] rangeDate;
+
     /** 请假开始时间 */
-    private Timestamp startDate;
+    private Date startDate;
 
     /** 请假结束时间 */
-    private Timestamp endDate;
+    private Date endDate;
 
     /** 总共请假天数 */
     private Long count;
@@ -57,4 +68,7 @@ public class HolidayRecordDto implements Serializable {
 
     /** 假期状态 */
     private Long status;
+
+    /** 手机号 */
+    private Long phone;
 }

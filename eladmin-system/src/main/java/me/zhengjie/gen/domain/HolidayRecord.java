@@ -24,14 +24,20 @@ import javax.validation.constraints.*;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import org.hibernate.annotations.*;
+
+import java.sql.Array;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 /**
 * @website https://el-admin.vip
 * @description /
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 @Entity
 @Data
@@ -48,17 +54,24 @@ public class HolidayRecord implements Serializable {
     @ApiModelProperty(value = "用户名")
     private String userName;
 
-    @Column(name = "dept_name")
+    @Column(name = "dept_name",nullable = false)
+    @NotBlank
     @ApiModelProperty(value = "部门名称")
     private String deptName;
 
-    @Column(name = "start_date")
-    @ApiModelProperty(value = "请假开始时间")
-    private Timestamp startDate;
+    @Column(name = "range_date")
+    @ApiModelProperty(value = "请假时间范围")
+    private String[] rangeDate;
 
-    @Column(name = "end_date")
+    @Column(name = "start_date",nullable = false)
+    @NotNull
+    @ApiModelProperty(value = "请假开始时间")
+    private Date startDate;
+
+    @Column(name = "end_date",nullable = false)
+    @NotNull
     @ApiModelProperty(value = "请假结束时间")
-    private Timestamp endDate;
+    private Date endDate;
 
     @Column(name = "count")
     @ApiModelProperty(value = "总共请假天数")
@@ -77,6 +90,11 @@ public class HolidayRecord implements Serializable {
     @Column(name = "status")
     @ApiModelProperty(value = "假期状态")
     private Long status;
+
+    @Column(name = "phone",nullable = false)
+    @NotNull
+    @ApiModelProperty(value = "手机号")
+    private Long phone;
 
     public void copy(HolidayRecord source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));

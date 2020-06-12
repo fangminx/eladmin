@@ -22,7 +22,7 @@ import me.zhengjie.annotation.Query;
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 @Data
 public class HolidayRecordQueryCriteria{
@@ -34,4 +34,8 @@ public class HolidayRecordQueryCriteria{
     /** 模糊 */
     @Query(type = Query.Type.INNER_LIKE)
     private String deptName;
+
+    /** 精确 */
+    @Query
+    private Long phone;
 }

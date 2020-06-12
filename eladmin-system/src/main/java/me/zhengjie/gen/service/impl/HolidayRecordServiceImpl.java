@@ -43,7 +43,7 @@ import java.util.LinkedHashMap;
 * @website https://el-admin.vip
 * @description 服务实现
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 @Service
 @RequiredArgsConstructor
@@ -108,6 +108,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
             map.put("数据创建时间", holidayRecord.getCreateTime());
             map.put("数据最近一次修改时间", holidayRecord.getUpdateTime());
             map.put("假期状态", holidayRecord.getStatus());
+            map.put("手机号", holidayRecord.getPhone());
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);

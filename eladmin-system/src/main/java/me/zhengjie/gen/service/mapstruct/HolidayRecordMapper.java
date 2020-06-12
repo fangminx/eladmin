@@ -24,7 +24,7 @@ import org.mapstruct.ReportingPolicy;
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-09
+* @date 2020-06-12
 **/
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface HolidayRecordMapper extends BaseMapper<HolidayRecordDto, HolidayRecord> {
