@@ -15,6 +15,7 @@
 */
 package me.zhengjie.gen.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.gen.domain.HolidayRecord;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
@@ -24,6 +25,7 @@ import me.zhengjie.gen.service.HolidayRecordService;
 import me.zhengjie.gen.service.dto.HolidayRecordDto;
 import me.zhengjie.gen.service.dto.HolidayRecordQueryCriteria;
 import me.zhengjie.gen.service.mapstruct.HolidayRecordMapper;
+import me.zhengjie.utils.date.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.lang.Snowflake;
@@ -32,12 +34,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
-import java.util.List;
-import java.util.Map;
+
+import java.text.ParseException;
+import java.util.*;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
 * @website https://el-admin.vip
@@ -46,6 +47,7 @@ import java.util.LinkedHashMap;
 * @date 2020-06-12
 **/
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class HolidayRecordServiceImpl implements HolidayRecordService {
 
@@ -75,7 +77,13 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
     @Transactional(rollbackFor = Exception.class)
     public HolidayRecordDto create(HolidayRecord resources) {
         Snowflake snowflake = IdUtil.createSnowflake(1, 1);
-        resources.setId(snowflake.nextId()); 
+        resources.setId(snowflake.nextId());
+
+        //日期赋值
+        java.sql.Date start = DateUtil.strToDate(resources.getRangeDate()[0]);
+        java.sql.Date end = DateUtil.strToDate(resources.getRangeDate()[1]);
+        resources.setStartDate(start);
+        resources.setEndDate(end);
         return holidayRecordMapper.toDto(holidayRecordRepository.save(resources));
     }
 
@@ -85,6 +93,12 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         HolidayRecord holidayRecord = holidayRecordRepository.findById(resources.getId()).orElseGet(HolidayRecord::new);
         ValidationUtil.isNull( holidayRecord.getId(),"HolidayRecord","id",resources.getId());
         holidayRecord.copy(resources);
+
+        //日期赋值
+        java.sql.Date start = DateUtil.strToDate(resources.getRangeDate()[0]);
+        java.sql.Date end = DateUtil.strToDate(resources.getRangeDate()[1]);
+        holidayRecord.setStartDate(start);
+        holidayRecord.setEndDate(end);
         holidayRecordRepository.save(holidayRecord);
     }
 

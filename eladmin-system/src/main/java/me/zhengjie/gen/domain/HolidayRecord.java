@@ -59,17 +59,16 @@ public class HolidayRecord implements Serializable {
     @ApiModelProperty(value = "部门名称")
     private String deptName;
 
-    @Column(name = "range_date")
-    @ApiModelProperty(value = "请假时间范围")
+//    @Column(name = "range_date")
+//    @ApiModelProperty(value = "请假时间范围")
+    @Transient
     private String[] rangeDate;
 
     @Column(name = "start_date",nullable = false)
-    @NotNull
     @ApiModelProperty(value = "请假开始时间")
     private Date startDate;
 
     @Column(name = "end_date",nullable = false)
-    @NotNull
     @ApiModelProperty(value = "请假结束时间")
     private Date endDate;
 

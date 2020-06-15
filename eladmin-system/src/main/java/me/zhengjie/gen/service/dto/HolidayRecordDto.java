@@ -48,7 +48,7 @@ public class HolidayRecordDto implements Serializable {
     private String deptName;
 
     /** 时间范围 */
-    @JsonSerialize(using= ToStringSerializer.class)
+//    @JsonSerialize(using= ToStringSerializer.class)
     private String[] rangeDate;
 
     /** 请假开始时间 */
