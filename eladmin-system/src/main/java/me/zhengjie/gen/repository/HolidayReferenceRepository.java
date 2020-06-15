@@ -18,6 +18,11 @@ package me.zhengjie.gen.repository;
 import me.zhengjie.gen.domain.HolidayReference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import java.sql.Date;
+import java.util.List;
 
 /**
 * @website https://el-admin.vip
@@ -25,4 +30,21 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 * @date 2020-06-12
 **/
 public interface HolidayReferenceRepository extends JpaRepository<HolidayReference, Long>, JpaSpecificationExecutor<HolidayReference> {
+
+    /**
+     * 判断当天部门有多少请假记录
+     */
+    Long countByDeptNameAndRefHolidayDate(String name, Date date);
+
+
+    /**
+     * 查询当天部门所有请假记录
+     */
+    List<HolidayReference> findAllByDeptNameAndRefHolidayDateOrderByUpdateTimeAsc(String name, Date date);
+
+
+    @Modifying
+    @Query(value = "update holiday_reference set user_name = ?2 , user_phone = ?3 where id = ?1",nativeQuery = true)
+    void updateReference(Long id, String userName, String userPhone);
+
 }

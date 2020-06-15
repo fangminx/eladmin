@@ -18,6 +18,8 @@ package me.zhengjie.modules.system.service;
 import me.zhengjie.modules.system.domain.Dept;
 import me.zhengjie.modules.system.service.dto.DeptDto;
 import me.zhengjie.modules.system.service.dto.DeptQueryCriteria;
+import me.zhengjie.modules.system.service.dto.DeptSimpleDto;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
@@ -122,4 +124,9 @@ public interface DeptService {
      * @param deptDtos /
      */
     void verification(Set<DeptDto> deptDtos);
+
+    /**
+     * 根据名称查询部门简略详情(人数、在位率)
+     */
+    DeptSimpleDto findByName(String name);
 }

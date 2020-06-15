@@ -25,6 +25,7 @@ import me.zhengjie.modules.system.repository.RoleRepository;
 import me.zhengjie.modules.system.repository.UserRepository;
 import me.zhengjie.modules.system.service.dto.DeptDto;
 import me.zhengjie.modules.system.service.dto.DeptQueryCriteria;
+import me.zhengjie.modules.system.service.dto.DeptSimpleDto;
 import me.zhengjie.utils.FileUtil;
 import me.zhengjie.utils.QueryHelp;
 import me.zhengjie.utils.RedisUtils;
@@ -37,6 +38,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Field;
@@ -249,6 +252,20 @@ public class DeptServiceImpl implements DeptService {
         if(roleRepository.countByDepts(deptIds) > 0){
             throw new BadRequestException("所选部门存在角色关联，请解除后再试！");
         }
+    }
+
+    @Override
+    public DeptSimpleDto findByName(String name) {
+        List<Dept> depts = deptRepository.findByName(name);
+        if (CollectionUtils.isEmpty(depts)){
+            return null;
+        }
+        Long count = userRepository.countByDeptId(depts.get(0).getId());
+        DeptSimpleDto deptSimpleDto = new DeptSimpleDto();
+        deptSimpleDto.setPreRate(depts.get(0).getPreRate());
+        deptSimpleDto.setCount(count);
+        deptSimpleDto.setName(depts.get(0).getName());
+        return deptSimpleDto;
     }
 
     /**

@@ -66,4 +66,15 @@ public interface DeptRepository extends JpaRepository<Dept, Long>, JpaSpecificat
     @Modifying
     @Query(value = " update sys_dept set sub_count = ?1 where dept_id = ?2 ",nativeQuery = true)
     void updateSubCntById(Integer count, Long id);
+
+    /**
+     * 根据部门名称查询
+     */
+    List<Dept> findByName(String name);
+
+
+//    /**
+//     * 判断有多少个部门
+//     */
+//    Long countById(Long id);
 }

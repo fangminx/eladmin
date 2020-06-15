@@ -17,6 +17,14 @@ package me.zhengjie.gen.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
 import me.zhengjie.gen.domain.HolidayRecord;
+import me.zhengjie.gen.domain.HolidayReference;
+import me.zhengjie.gen.repository.HolidayReferenceRepository;
+import me.zhengjie.gen.service.HolidayReferenceService;
+import me.zhengjie.modules.mnt.websocket.MsgType;
+import me.zhengjie.modules.mnt.websocket.SocketMsg;
+import me.zhengjie.modules.mnt.websocket.WebSocketServer;
+import me.zhengjie.modules.system.service.DeptService;
+import me.zhengjie.modules.system.service.dto.DeptSimpleDto;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +33,7 @@ import me.zhengjie.gen.service.HolidayRecordService;
 import me.zhengjie.gen.service.dto.HolidayRecordDto;
 import me.zhengjie.gen.service.dto.HolidayRecordQueryCriteria;
 import me.zhengjie.gen.service.mapstruct.HolidayRecordMapper;
+import me.zhengjie.utils.calc.CalculationUtil;
 import me.zhengjie.utils.date.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +61,18 @@ import javax.servlet.http.HttpServletResponse;
 public class HolidayRecordServiceImpl implements HolidayRecordService {
 
     private final HolidayRecordRepository holidayRecordRepository;
+    private final HolidayReferenceRepository holidayReferenceRepository;
+    private final HolidayReferenceService holidayReferenceService;
     private final HolidayRecordMapper holidayRecordMapper;
+    private final DeptService deptService;
+
+    private void sendMsg(String msg, MsgType msgType, String phone) {
+        try {
+            WebSocketServer.sendInfo(new SocketMsg(msg, msgType), phone);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public Map<String,Object> queryAll(HolidayRecordQueryCriteria criteria, Pageable pageable){
@@ -84,6 +104,43 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         java.sql.Date end = DateUtil.strToDate(resources.getRangeDate()[1]);
         resources.setStartDate(start);
         resources.setEndDate(end);
+
+        //基本信息获取
+        String deptName = resources.getDeptName();
+        String userName = resources.getUserName();
+        Long userPhone = resources.getPhone();
+        DeptSimpleDto deptSimpleDto = deptService.findByName(deptName);
+        Long allCount = deptSimpleDto.getCount();
+        Float preRate = deptSimpleDto.getPreRate();
+        Long maxCount = Long.valueOf(CalculationUtil.multiply(allCount.toString(), preRate.toString(),0));
+        Long nowCount = holidayReferenceRepository.countByDeptNameAndRefHolidayDate(deptName, start);
+
+        //根据在位率来判断是新增还是修改
+        HolidayReference holidayReference = new HolidayReference();
+        holidayReference.setUserName(userName);
+        holidayReference.setDeptName(deptName);
+        holidayReference.setUserPhone(userPhone);
+        holidayReference.setRefHolidayDate(start);
+        if(nowCount < maxCount){
+            holidayReferenceService.create(holidayReference);
+            sendMsg("您的请假申请已进入竞选状态",MsgType.success,userPhone.toString());
+        }else {
+            List<HolidayReference> holidayReferences = holidayReferenceRepository.findAllByDeptNameAndRefHolidayDateOrderByUpdateTimeAsc(deptName,start);
+            //被淘汰的请假用户手机号
+            Long passedPhone = holidayReferences.get(0).getUserPhone();
+
+            holidayReference.setId(holidayReferences.get(0).getId());
+            holidayReferenceService.update(holidayReference);
+            if(userPhone.equals(passedPhone)){
+                sendMsg("您在这个日期已提交过假日申请：" , MsgType.success,userPhone.toString());
+                return null;
+            }
+            sendMsg("您的请假申请已进入竞选状态,淘汰了用户：" + passedPhone, MsgType.success,userPhone.toString());
+            sendMsg("您的请假被高优先级用户：" + userPhone + "占用，请重新申请", MsgType.error,passedPhone.toString());
+        }
+
+
+
         return holidayRecordMapper.toDto(holidayRecordRepository.save(resources));
     }
 
