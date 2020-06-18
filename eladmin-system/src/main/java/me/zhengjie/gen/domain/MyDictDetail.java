@@ -15,15 +15,18 @@
  */
 package me.zhengjie.gen.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import me.zhengjie.base.BaseEntity;
 import me.zhengjie.modules.system.domain.Dict;
+import me.zhengjie.modules.system.domain.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
 * @author Zheng Jie
@@ -58,4 +61,14 @@ public class MyDictDetail extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "排序")
     private Integer dictSort = 999;
+
+//    @JsonIgnore
+//    @ManyToMany(mappedBy = "rytjs")
+//    @ApiModelProperty(value = "用户", hidden = true)
+//    private Set<User> users;
+//
+//    @JsonIgnore
+//    @ManyToMany(mappedBy = "yhtjs")
+//    @ApiModelProperty(value = "用户", hidden = true)
+//    private Set<User> users2;
 }

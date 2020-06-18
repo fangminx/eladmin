@@ -17,6 +17,8 @@ package me.zhengjie.modules.system.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.config.FileProperties;
+import me.zhengjie.gen.domain.MyDictDetail;
+import me.zhengjie.gen.repository.MyDictDetailRepository;
 import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.exception.EntityExistException;
 import me.zhengjie.exception.EntityNotFoundException;
@@ -54,6 +56,7 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final FileProperties properties;
     private final RedisUtils redisUtils;
+//    private final MyDictDetailRepository myDictDetailRepository;
 
     @Override
     public Object queryAll(UserQueryCriteria criteria, Pageable pageable) {
@@ -85,6 +88,10 @@ public class UserServiceImpl implements UserService {
         if(userRepository.findByEmail(resources.getEmail())!=null){
             throw new EntityExistException(User.class,"email",resources.getEmail());
         }
+//        List<MyDictDetail> rytjs = myDictDetailRepository.findByDictName("荣誉条件");
+//        List<MyDictDetail> yhtjs = myDictDetailRepository.findByDictName("优惠条件");
+//        resources.setRytjs(rytjs);
+//        resources.setYhtjs(yhtjs);
         userRepository.save(resources);
     }
 
