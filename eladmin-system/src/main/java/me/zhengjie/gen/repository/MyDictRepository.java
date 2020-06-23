@@ -19,6 +19,7 @@ import me.zhengjie.gen.domain.MyDict;
 import me.zhengjie.modules.system.domain.Dict;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 import java.util.Set;
@@ -41,4 +42,8 @@ public interface MyDictRepository extends JpaRepository<MyDict, Long>, JpaSpecif
      * @return /
      */
     List<MyDict> findByIdIn(Set<Long> ids);
+
+//    @Query(value = "select count(1) from sys_role r, sys_roles_depts d where " +
+//            "r.role_id = d.role_id and d.dept_id in ?1",nativeQuery = true)
+//    List<MyDict> findAllCondition();
 }

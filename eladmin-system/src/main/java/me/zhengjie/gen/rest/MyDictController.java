@@ -18,10 +18,12 @@ package me.zhengjie.gen.rest;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
+import me.zhengjie.annotation.AnonymousAccess;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.exception.BadRequestException;
 import me.zhengjie.gen.domain.MyDict;
 import me.zhengjie.gen.service.MyDictService;
+import me.zhengjie.gen.service.dto.ConditionDto;
 import me.zhengjie.gen.service.dto.MyDictQueryCriteria;
 import me.zhengjie.modules.system.domain.Dict;
 import me.zhengjie.modules.system.service.DictService;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -102,5 +105,13 @@ public class MyDictController {
     public ResponseEntity<Object> delete(@RequestBody Set<Long> ids){
         dictService.delete(ids);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @Log("查询所有级联条件结果")
+    @ApiOperation("查询所有级联条件结果")
+    @GetMapping(value = "/all/condition")
+    @AnonymousAccess
+    public ResponseEntity<Object> query(){
+        return new ResponseEntity<>(dictService.findAllConditions(),HttpStatus.OK);
     }
 }

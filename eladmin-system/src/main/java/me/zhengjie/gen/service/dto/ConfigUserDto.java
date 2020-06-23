@@ -40,7 +40,7 @@ public class ConfigUserDto implements Serializable {
     private Long userPhone;
 
     /** 条件类别 */
-    private String condition;
+    private String conditions;
 
     /** 条件项 */
     private String conditionItem;

@@ -99,7 +99,7 @@ public class ConfigUserServiceImpl implements ConfigUserService {
             map.put("用户名", configUser.getUserName());
             map.put("部门名称", configUser.getDeptName());
             map.put("手机号", configUser.getUserPhone());
-            map.put("条件类别", configUser.getCondition());
+            map.put("条件类别", configUser.getConditions());
             map.put("条件项", configUser.getConditionItem());
             map.put("条件权重", configUser.getConditionWeight());
             map.put(" createBy",  configUser.getCreateBy());

@@ -16,6 +16,7 @@
 package me.zhengjie.gen.service;
 
 import me.zhengjie.gen.domain.MyDict;
+import me.zhengjie.gen.service.dto.ConditionDto;
 import me.zhengjie.gen.service.dto.MyDictDto;
 import me.zhengjie.gen.service.dto.MyDictQueryCriteria;
 import org.springframework.data.domain.Pageable;
@@ -73,4 +74,12 @@ public interface MyDictService {
      * @throws IOException /
      */
     void download(List<MyDictDto> queryAll, HttpServletResponse response) throws IOException;
+
+    /**
+     * 查询全部级联要用到的条件字段
+     * @return
+     */
+    List<ConditionDto> findAllConditions();
+
+
 }

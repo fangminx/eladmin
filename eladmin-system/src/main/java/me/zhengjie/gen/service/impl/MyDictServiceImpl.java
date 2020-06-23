@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import me.zhengjie.gen.domain.MyDict;
 import me.zhengjie.gen.repository.MyDictRepository;
 import me.zhengjie.gen.service.MyDictService;
+import me.zhengjie.gen.service.dto.ConditionDto;
 import me.zhengjie.gen.service.dto.MyDictDetailDto;
 import me.zhengjie.gen.service.dto.MyDictDto;
 import me.zhengjie.gen.service.dto.MyDictQueryCriteria;
@@ -120,6 +121,28 @@ public class MyDictServiceImpl implements MyDictService {
             }
         }
         FileUtil.downloadExcel(list, response);
+    }
+
+    @Override
+    public List<ConditionDto> findAllConditions() {
+        List<MyDict> myDicts = dictRepository.findAll();
+        List<ConditionDto> conditionDtos = new ArrayList<>();
+        myDicts.stream().forEach(m->{
+            ConditionDto conditionDto = new ConditionDto();
+            List<Map<String, Object>> list = new ArrayList<>();
+            conditionDto.setLabel(m.getName());
+            m.getDictDetails().stream().forEach(md->{
+                Map<String,Object> map = new HashMap<>();
+                map.put("value",md.getLabel()); //前端要唯一
+                map.put("label",md.getLabel());
+                map.put("weight",md.getWeight());
+                list.add(map);
+                conditionDto.setChildren(list);
+            });
+            conditionDtos.add(conditionDto);
+        });
+
+        return conditionDtos;
     }
 
     public void delCaches(MyDict dict){
