@@ -128,7 +128,8 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
             Long nowCount = holidayReferenceRepository.countByDeptNameAndRefHolidayDate(deptName, DateUtil.strToDate(now));
             if(nowCount < maxCount){
                 holidayReferenceService.create(holidayReference);
-                sendMsg("您在" + now + "的请假申请已进入竞选状态",MsgType.success,userPhone.toString());
+//                sendMsg("您在" + now + "的请假申请已进入竞选状态",MsgType.success,userPhone.toString());
+                resources.setStatus("成功");
             }else {
                 List<HolidayReference> holidayReferences = holidayReferenceRepository.findAllByDeptNameAndRefHolidayDateOrderByUpdateTimeAsc(deptName,DateUtil.strToDate(now));
                 //被淘汰的请假用户手机号
@@ -138,14 +139,17 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
                 holidayReference.setId(holidayReferences.get(0).getId());
                 if(userPhone.equals(passedPhone) && now.equals(refDate.toString())){
                     sendMsg("您在" + now + "已提交过假日申请,请重新申请" , MsgType.error,userPhone.toString());
+                    resources.setStatus("失败");
                     return;
                 }
                 if(!holidayReferences.stream().map(h -> h.getUserPhone()).collect(Collectors.toList()).contains(userPhone)){
                     holidayReferenceService.update(holidayReference);
-                    sendMsg("您在" + now + "的请假申请已进入竞选状态,淘汰了用户：" + passedPhone, MsgType.success,userPhone.toString());
+//                    sendMsg("您在" + now + "的请假申请已进入竞选状态,淘汰了用户：" + passedPhone, MsgType.success,userPhone.toString());
                     sendMsg("您在" + now + "的请假被高优先级用户：" + userPhone + "抵消，请重新申请", MsgType.error,passedPhone.toString());
+                    resources.setStatus("成功");
                 }else {
                     sendMsg("您在" + now + "已提交过假日申请,请重新申请" , MsgType.error,userPhone.toString());
+                    resources.setStatus("被抵销");
                 }
             }
 

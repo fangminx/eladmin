@@ -67,7 +67,7 @@ public class HolidayRecordDto implements Serializable {
     private Timestamp updateTime;
 
     /** 假期状态 */
-    private Long status;
+    private String status;
 
     /** 手机号 */
     private Long phone;

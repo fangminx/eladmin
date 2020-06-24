@@ -46,7 +46,7 @@ public class ConfigUserController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('configUser:list')")
+//    @PreAuthorize("@el.check('configUser:list')")
     public void download(HttpServletResponse response, ConfigUserQueryCriteria criteria) throws IOException {
         configUserService.download(configUserService.queryAll(criteria), response);
     }
@@ -54,7 +54,7 @@ public class ConfigUserController {
     @GetMapping
     @Log("查询用户荣誉条件配置")
     @ApiOperation("查询用户荣誉条件配置")
-    @PreAuthorize("@el.check('configUser:list')")
+//    @PreAuthorize("@el.check('configUser:list')")
     public ResponseEntity<Object> query(ConfigUserQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(configUserService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class ConfigUserController {
     @PostMapping
     @Log("新增用户荣誉条件配置")
     @ApiOperation("新增用户荣誉条件配置")
-    @PreAuthorize("@el.check('configUser:add')")
+//    @PreAuthorize("@el.check('configUser:add')")
     public ResponseEntity<Object> create(@Validated @RequestBody ConfigUser resources){
         return new ResponseEntity<>(configUserService.create(resources),HttpStatus.CREATED);
     }
@@ -70,7 +70,7 @@ public class ConfigUserController {
     @PutMapping
     @Log("修改用户荣誉条件配置")
     @ApiOperation("修改用户荣誉条件配置")
-    @PreAuthorize("@el.check('configUser:edit')")
+//    @PreAuthorize("@el.check('configUser:edit')")
     public ResponseEntity<Object> update(@Validated @RequestBody ConfigUser resources){
         configUserService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -78,7 +78,7 @@ public class ConfigUserController {
 
     @Log("删除用户荣誉条件配置")
     @ApiOperation("删除用户荣誉条件配置")
-    @PreAuthorize("@el.check('configUser:del')")
+//    @PreAuthorize("@el.check('configUser:del')")
     @DeleteMapping
     public ResponseEntity<Object> delete(@RequestBody Long[] ids) {
         configUserService.deleteAll(ids);

@@ -88,7 +88,7 @@ public class HolidayRecord implements Serializable {
 
     @Column(name = "status")
     @ApiModelProperty(value = "假期状态")
-    private Long status;
+    private String status;
 
     @Column(name = "phone",nullable = false)
     @NotNull

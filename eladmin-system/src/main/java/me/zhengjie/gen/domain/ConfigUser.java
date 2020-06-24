@@ -49,13 +49,13 @@ public class ConfigUser implements Serializable {
     @ApiModelProperty(value = "用户名")
     private String userName;
 
-    @Column(name = "dept_name",nullable = false)
-    @NotBlank
+    @Column(name = "dept_name")
+//    @NotBlank
     @ApiModelProperty(value = "部门名称")
     private String deptName;
 
-    @Column(name = "user_phone",nullable = false)
-    @NotNull
+    @Column(name = "user_phone")
+//    @NotNull
     @ApiModelProperty(value = "手机号")
     private Long userPhone;
 

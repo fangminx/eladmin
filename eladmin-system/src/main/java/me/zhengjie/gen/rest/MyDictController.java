@@ -56,7 +56,7 @@ public class MyDictController {
     @Log("导出字典数据")
     @ApiOperation("导出字典数据")
     @GetMapping(value = "/download")
-    @PreAuthorize("@el.check('mydict:list')")
+//    @PreAuthorize("@el.check('mydict:list')")
     public void download(HttpServletResponse response, MyDictQueryCriteria criteria) throws IOException {
         dictService.download(dictService.queryAll(criteria), response);
     }
@@ -64,7 +64,7 @@ public class MyDictController {
     @Log("查询字典")
     @ApiOperation("查询字典")
     @GetMapping(value = "/all")
-    @PreAuthorize("@el.check('mydict:list')")
+//    @PreAuthorize("@el.check('mydict:list')")
     public ResponseEntity<Object> queryAll(){
         return new ResponseEntity<>(dictService.queryAll(new MyDictQueryCriteria()),HttpStatus.OK);
     }
@@ -72,7 +72,7 @@ public class MyDictController {
     @Log("查询字典")
     @ApiOperation("查询字典")
     @GetMapping
-    @PreAuthorize("@el.check('mydict:list')")
+//    @PreAuthorize("@el.check('mydict:list')")
     public ResponseEntity<Object> query(MyDictQueryCriteria resources, Pageable pageable){
         return new ResponseEntity<>(dictService.queryAll(resources,pageable),HttpStatus.OK);
     }
@@ -80,7 +80,7 @@ public class MyDictController {
     @Log("新增字典")
     @ApiOperation("新增字典")
     @PostMapping
-    @PreAuthorize("@el.check('mydict:add')")
+//    @PreAuthorize("@el.check('mydict:add')")
     public ResponseEntity<Object> create(@Validated @RequestBody MyDict resources){
         if (resources.getId() != null) {
             throw new BadRequestException("A new "+ ENTITY_NAME +" cannot already have an ID");
@@ -92,7 +92,7 @@ public class MyDictController {
     @Log("修改字典")
     @ApiOperation("修改字典")
     @PutMapping
-    @PreAuthorize("@el.check('mydict:edit')")
+//    @PreAuthorize("@el.check('mydict:edit')")
     public ResponseEntity<Object> update(@Validated(MyDict.Update.class) @RequestBody MyDict resources){
         dictService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -101,7 +101,7 @@ public class MyDictController {
     @Log("删除字典")
     @ApiOperation("删除字典")
     @DeleteMapping
-    @PreAuthorize("@el.check('mydict:del')")
+//    @PreAuthorize("@el.check('mydict:del')")
     public ResponseEntity<Object> delete(@RequestBody Set<Long> ids){
         dictService.delete(ids);
         return new ResponseEntity<>(HttpStatus.OK);
