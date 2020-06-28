@@ -15,9 +15,14 @@
 */
 package me.zhengjie.gen.repository;
 
+import me.zhengjie.base.BaseEntity;
 import me.zhengjie.gen.domain.HolidayRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
 * @website https://el-admin.vip
@@ -25,4 +30,12 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 * @date 2020-06-12
 **/
 public interface HolidayRecordRepository extends JpaRepository<HolidayRecord, Long>, JpaSpecificationExecutor<HolidayRecord> {
+
+    List<HolidayRecord> findByDeptName(String deptName);
+
+    @Modifying
+    @Query(value = "update holiday_record set status = ?2 where id = ?1",nativeQuery = true)
+    void updateStatusById(Long id, String status);
+
+    List<HolidayRecord> findByUserNameAndStatus(String userName,String status);
 }

@@ -33,5 +33,5 @@ public class ConfigParamDto implements Serializable {
     private String name;
 
     /** 参数值 */
-    private String value;
+    private Integer value;
 }

@@ -31,5 +31,7 @@ public enum MsgType {
 	/** 前端弹出框用，要小写 */
 	success,
 	/** 前端弹出框用，要小写 */
-	error
+	error,
+	/** 前端弹出框用，要小写 */
+	info
 }

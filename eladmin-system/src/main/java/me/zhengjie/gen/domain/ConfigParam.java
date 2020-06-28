@@ -48,7 +48,7 @@ public class ConfigParam implements Serializable {
     @Column(name = "value",nullable = false)
     @NotBlank
     @ApiModelProperty(value = "参数值")
-    private String value;
+    private Integer value;
 
     public void copy(ConfigParam source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));

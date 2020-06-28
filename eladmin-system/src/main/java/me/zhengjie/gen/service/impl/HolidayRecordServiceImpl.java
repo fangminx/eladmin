@@ -16,9 +16,12 @@
 package me.zhengjie.gen.service.impl;
 
 import lombok.extern.slf4j.Slf4j;
+import me.zhengjie.gen.domain.ConfigUser;
+import me.zhengjie.gen.domain.HolidayPassedRecord;
 import me.zhengjie.gen.domain.HolidayRecord;
 import me.zhengjie.gen.domain.HolidayReference;
-import me.zhengjie.gen.repository.HolidayReferenceRepository;
+import me.zhengjie.gen.repository.*;
+import me.zhengjie.gen.service.ConfigUserService;
 import me.zhengjie.gen.service.HolidayReferenceService;
 import me.zhengjie.modules.mnt.websocket.MsgType;
 import me.zhengjie.modules.mnt.websocket.SocketMsg;
@@ -28,7 +31,6 @@ import me.zhengjie.modules.system.service.dto.DeptSimpleDto;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
-import me.zhengjie.gen.repository.HolidayRecordRepository;
 import me.zhengjie.gen.service.HolidayRecordService;
 import me.zhengjie.gen.service.dto.HolidayRecordDto;
 import me.zhengjie.gen.service.dto.HolidayRecordQueryCriteria;
@@ -63,9 +65,13 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
 
     private final HolidayRecordRepository holidayRecordRepository;
     private final HolidayReferenceRepository holidayReferenceRepository;
+    private final ConfigUserRepository configUserRepository;
     private final HolidayReferenceService holidayReferenceService;
     private final HolidayRecordMapper holidayRecordMapper;
     private final DeptService deptService;
+    private final ConfigUserService configUserService;
+    private final ConfigParamRepository configParamRepository;
+    private final HolidayPassedRecordRepository holidayPassedRecordRepository;
 
     private void sendMsg(String msg, MsgType msgType, String phone) {
         try {
@@ -115,46 +121,120 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         Float preRate = deptSimpleDto.getPreRate();
         Long maxCount = Long.valueOf(CalculationUtil.multiply(allCount.toString(), preRate.toString(),0));
 
+        //判断当前用户是否还有假期
+        int[] array = configUserService.findAllHolidayAndUsedHolidayByUserName(userName);
+        int submitDay = DateUtil.getDiff(start,end,Calendar.DATE)+1;
+        if(array[0]<array[1]){
+            sendMsg("您当前假期已超过年假总天数，请及时处理，年假总数："+array[0]+"天， 已申请假期："+array[1]+"天", MsgType.error, userPhone.toString());
+            throw new RuntimeException("您当前假期已超过年假总天数，请及时处理，年假总数："+array[0]+"天， 已申请假期："+array[1]+"天");
+        }else if(array[0]==array[1]) {
+            sendMsg("您当前假期刚好用完，共："+array[0]+"天", MsgType.error, userPhone.toString());
+            throw new RuntimeException("您当前假期刚好用完，共："+array[0]+"天");
+        } else if((array[0]-array[1])<submitDay){
+            sendMsg("您当前假期还剩："+(array[0]-array[1])+"天, 请减少日期范围", MsgType.error, userPhone.toString());
+            throw new RuntimeException("您当前假期还剩："+(array[0]-array[1])+"天， 请减少日期范围");
+        } else if ((array[0]-array[1])>=submitDay){
+            sendMsg("您当前假期还剩："+(array[0]-array[1])+"天， 当前提交天数：" +submitDay+ "， 完成休假后，您将还剩下："+((array[0]-array[1])-submitDay)+"天", MsgType.info, userPhone.toString());
+        }
+
+        //记录可以被抵消的人员请假记录信息
+        List<HolidayRecord> passedRecords = new ArrayList<>();
 
         //遍历开始时间和结束时间
         DateUtil.collectLocalDates(DateUtil.date2Str(start),DateUtil.date2Str(end)).forEach(now -> {
-            //根据在位率来判断是新增还是修改
-            HolidayReference holidayReference = new HolidayReference();
-            holidayReference.setUserName(userName);
-            holidayReference.setDeptName(deptName);
-            holidayReference.setUserPhone(userPhone);
-            holidayReference.setRefHolidayDate(DateUtil.strToDate(now));
-
-            Long nowCount = holidayReferenceRepository.countByDeptNameAndRefHolidayDate(deptName, DateUtil.strToDate(now));
-            if(nowCount < maxCount){
-                holidayReferenceService.create(holidayReference);
-//                sendMsg("您在" + now + "的请假申请已进入竞选状态",MsgType.success,userPhone.toString());
-                resources.setStatus("成功");
-            }else {
-                List<HolidayReference> holidayReferences = holidayReferenceRepository.findAllByDeptNameAndRefHolidayDateOrderByUpdateTimeAsc(deptName,DateUtil.strToDate(now));
-                //被淘汰的请假用户手机号
-                Long passedPhone = holidayReferences.get(0).getUserPhone();
-                //获得要被淘汰用户的参考假日
-                java.sql.Date refDate = holidayReferences.get(0).getRefHolidayDate();
-                holidayReference.setId(holidayReferences.get(0).getId());
-                if(userPhone.equals(passedPhone) && now.equals(refDate.toString())){
-                    sendMsg("您在" + now + "已提交过假日申请,请重新申请" , MsgType.error,userPhone.toString());
-                    resources.setStatus("失败");
-                    return;
-                }
-                if(!holidayReferences.stream().map(h -> h.getUserPhone()).collect(Collectors.toList()).contains(userPhone)){
-                    holidayReferenceService.update(holidayReference);
-//                    sendMsg("您在" + now + "的请假申请已进入竞选状态,淘汰了用户：" + passedPhone, MsgType.success,userPhone.toString());
-                    sendMsg("您在" + now + "的请假被高优先级用户：" + userPhone + "抵消，请重新申请", MsgType.error,passedPhone.toString());
-                    resources.setStatus("成功");
-                }else {
-                    sendMsg("您在" + now + "已提交过假日申请,请重新申请" , MsgType.error,userPhone.toString());
-                    resources.setStatus("被抵销");
-                }
+            //判断自己的提交记录，不能有日期重复提交
+            List<HolidayRecord> hitRecords = checkIfSatisfiedPreRate(deptName,now);
+            if(hitRecords.stream().filter(h->h.getUserName().equals(userName)).count() > 0){
+                sendMsg("您提交的时间范围和之前成功提交的有冲突，请重新提交", MsgType.error, userPhone.toString());
+                throw new RuntimeException("您提交的时间范围和之前成功提交的有冲突，请重新提交");
             }
 
+            //根据在位率来判断
+            //当前遍历的日期已经达到最大部门在位人数
+            if(hitRecords.size() >= maxCount){
+                //判断优先级，看是否能抵消其他人，要遍历完，找到当前天优先级最低的
+                Long thisUserWeight = calculateUserWeight(userName);
+//                Long minWeight = hitRecords.stream().mapToLong(h->calculateUserWeight(h.getUserName())).min().getAsLong();
+                //当天优先级最低的记录
+                HolidayRecord minRecord = hitRecords.get(0);
+                Long minWeight = calculateUserWeight(minRecord.getUserName());
+                for(HolidayRecord hit : hitRecords){
+                    Long hitWeight = calculateUserWeight(hit.getUserName());
+                    if(hitWeight < minWeight){
+                        minWeight = hitWeight;
+                        minRecord = hit;
+                    }
+                }
+
+
+                if(thisUserWeight > minWeight){
+                    //当前日期可以抵消对方,记录对方信息
+                    passedRecords.add(minRecord);
+
+                }else {
+                    //必然失败
+                    sendMsg(now + "已达到最大申请人数，且您的优先级不足，无法抵消其他人", MsgType.error, userPhone.toString());
+                    throw new RuntimeException(now + "已达到最大申请人数，且您的优先级不足，无法抵消其他人");
+                }
+
+            }else {
+                //当前日期空闲
+
+            }
         });
+
+        //遍历结束，当前用户优先级高，准备抵消别人的请假记录
+        if(passedRecords.size()>0) {
+            HolidayRecord passed = passedRecords.get(0);
+            Long minPassedWeight = calculateUserWeight(passed.getUserName());
+            for (HolidayRecord pass : passedRecords) {
+                Long hitPassedWeight = calculateUserWeight(passed.getUserName());
+                if (hitPassedWeight < minPassedWeight) {
+                    minPassedWeight = hitPassedWeight;
+                    passed = pass;
+                }
+            }
+            holidayRecordRepository.updateStatusById(passed.getId(),"被抵消");
+            //被抵消记录表做相关记录
+            HolidayPassedRecord holidayPassedRecord = new HolidayPassedRecord();
+            holidayPassedRecord.setRecordId(passed.getId());
+            holidayPassedRecord.setDeptName(passed.getDeptName());
+            holidayPassedRecord.setPassedUser(passed.getUserName());
+            holidayPassedRecord.setPassedWeight(minPassedWeight.toString());
+            holidayPassedRecord.setPriorityUser(userName);
+            holidayPassedRecord.setPriorityWeight(calculateUserWeight(userName).toString());
+            holidayPassedRecordRepository.save(holidayPassedRecord);
+            sendMsg("您有一条请假记录被高优先级用户："+ userName + "抵消，请注意查看", MsgType.error, passed.getPhone().toString());
+
+
+        }
+
+        //遍历结束，无论是否抵消别人，当前用户都保存为成功
+        resources.setStatus("成功");
         return holidayRecordMapper.toDto(holidayRecordRepository.save(resources));
+    }
+
+    //一个方法，判断包含这个日期的（成功）假期记录
+    //做了一个最大优先时间的考虑，h.getStartDate()向后移动一天
+    private List<HolidayRecord> checkIfSatisfiedPreRate(String deptName, String now) {
+        List<HolidayRecord> holidayRecords = holidayRecordRepository.findByDeptName(deptName);
+        Integer moveDay = configParamRepository.findByName("最大优先时间（天）").getValue();
+        //记录now在这些日期范围的记录
+        Long nowDateTime = DateUtil.strToDate(now).getTime();
+        List<HolidayRecord> hitRecords = holidayRecords.stream().filter(h->h.getStatus().equals("成功"))
+                .filter(h->nowDateTime >= DateUtil.getDateAfter(h.getStartDate(),moveDay).getTime() && nowDateTime <= h.getEndDate().getTime())
+                .collect(Collectors.toList());
+         return hitRecords;
+    }
+
+    //一个方法，计算用户当前的优先级（权重）
+    private Long calculateUserWeight(String userName){
+        List<ConfigUser> configUsers = configUserRepository.findByUserName(userName);
+        Long userWeight = 0L;
+        for(int i=0; i<configUsers.size(); i++){
+            userWeight += configUsers.get(i).getConditionWeight();
+        }
+        return userWeight;
     }
 
     @Override

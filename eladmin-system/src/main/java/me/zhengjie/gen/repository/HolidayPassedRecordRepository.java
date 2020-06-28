@@ -15,15 +15,14 @@
 */
 package me.zhengjie.gen.repository;
 
-import me.zhengjie.gen.domain.ConfigParam;
+import me.zhengjie.gen.domain.HolidayPassedRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-24
+* @date 2020-06-28
 **/
-public interface ConfigParamRepository extends JpaRepository<ConfigParam, Long>, JpaSpecificationExecutor<ConfigParam> {
-    ConfigParam findByName(String name);
+public interface HolidayPassedRecordRepository extends JpaRepository<HolidayPassedRecord, Long>, JpaSpecificationExecutor<HolidayPassedRecord> {
 }

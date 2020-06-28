@@ -31,67 +31,53 @@ import java.io.Serializable;
 * @website https://el-admin.vip
 * @description /
 * @author fangmin
-* @date 2020-06-18
+* @date 2020-06-28
 **/
 @Entity
 @Data
-@Table(name="config_user")
-public class ConfigUser implements Serializable {
+@Table(name="holiday_passed_record")
+public class HolidayPassedRecord implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     @ApiModelProperty(value = "id")
     private Long id;
 
-    @Column(name = "user_name",nullable = false)
-    @NotBlank
-    @ApiModelProperty(value = "用户名")
-    private String userName;
+    @Column(name = "record_id")
+    @ApiModelProperty(value = "对应请假记录表")
+    private Long recordId;
+
+    @Column(name = "passed_user")
+    @ApiModelProperty(value = "被抵消者")
+    private String passedUser;
+
+    @Column(name = "passed_weight")
+    @ApiModelProperty(value = "被抵消者权重")
+    private String passedWeight;
+
+    @Column(name = "priority_user")
+    @ApiModelProperty(value = "高优先级用户")
+    private String priorityUser;
+
+    @Column(name = "priority_weight")
+    @ApiModelProperty(value = "高优先级用户权重")
+    private String priorityWeight;
 
     @Column(name = "dept_name")
-//    @NotBlank
     @ApiModelProperty(value = "部门名称")
     private String deptName;
 
-    @Column(name = "user_phone")
-//    @NotNull
-    @ApiModelProperty(value = "手机号")
-    private Long userPhone;
-
-    @Column(name = "conditions",nullable = false)
-    @NotBlank
-    @ApiModelProperty(value = "条件类别")
-    private String conditions;
-
-    @Column(name = "condition_item",nullable = false)
-    @NotBlank
-    @ApiModelProperty(value = "条件项")
-    private String conditionItem;
-
-    @Column(name = "condition_weight")
-    @ApiModelProperty(value = "条件权重")
-    private Long conditionWeight;
-
-    @Column(name = "create_by")
-    @ApiModelProperty(value = "createBy")
-    private String createBy;
-
-    @Column(name = "update_by")
-    @ApiModelProperty(value = "updateBy")
-    private String updateBy;
-
     @Column(name = "create_time")
     @CreationTimestamp
-    @ApiModelProperty(value = "createTime")
+    @ApiModelProperty(value = "数据创建时间")
     private Timestamp createTime;
 
     @Column(name = "update_time")
     @UpdateTimestamp
-    @ApiModelProperty(value = "updateTime")
+    @ApiModelProperty(value = "数据最近一次修改时间")
     private Timestamp updateTime;
 
-    public void copy(ConfigUser source){
+    public void copy(HolidayPassedRecord source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
 }

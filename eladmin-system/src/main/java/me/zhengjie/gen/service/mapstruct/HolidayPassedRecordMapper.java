@@ -13,17 +13,20 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 */
-package me.zhengjie.gen.repository;
+package me.zhengjie.gen.service.mapstruct;
 
-import me.zhengjie.gen.domain.ConfigParam;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import me.zhengjie.base.BaseMapper;
+import me.zhengjie.gen.domain.HolidayPassedRecord;
+import me.zhengjie.gen.service.dto.HolidayPassedRecordDto;
+import org.mapstruct.Mapper;
+import org.mapstruct.ReportingPolicy;
 
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-24
+* @date 2020-06-28
 **/
-public interface ConfigParamRepository extends JpaRepository<ConfigParam, Long>, JpaSpecificationExecutor<ConfigParam> {
-    ConfigParam findByName(String name);
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
+public interface HolidayPassedRecordMapper extends BaseMapper<HolidayPassedRecordDto, HolidayPassedRecord> {
+
 }

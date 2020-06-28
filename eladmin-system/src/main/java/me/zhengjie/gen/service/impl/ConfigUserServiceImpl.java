@@ -15,7 +15,11 @@
 */
 package me.zhengjie.gen.service.impl;
 
+import me.zhengjie.gen.domain.ConfigParam;
 import me.zhengjie.gen.domain.ConfigUser;
+import me.zhengjie.gen.domain.HolidayRecord;
+import me.zhengjie.gen.repository.ConfigParamRepository;
+import me.zhengjie.gen.repository.HolidayRecordRepository;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -30,12 +34,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
-import java.util.List;
-import java.util.Map;
+
+import java.util.*;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
 * @website https://el-admin.vip
@@ -49,6 +51,8 @@ public class ConfigUserServiceImpl implements ConfigUserService {
 
     private final ConfigUserRepository configUserRepository;
     private final ConfigUserMapper configUserMapper;
+    private final ConfigParamRepository configParamRepository;
+    private final HolidayRecordRepository holidayRecordRepository;
 
     @Override
     public Map<String,Object> queryAll(ConfigUserQueryCriteria criteria, Pageable pageable){
@@ -109,5 +113,87 @@ public class ConfigUserServiceImpl implements ConfigUserService {
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
+    }
+
+    @Override
+    public int[] findAllHolidayAndUsedHolidayByUserName(String userName) {
+        List<ConfigParam> configParams = configParamRepository.findAll();
+        Map<String,Integer> params = new HashMap<>();
+        configParams.stream().forEach(c->{
+            params.put(c.getName(),c.getValue());
+        });
+        List<ConfigUser> configUsers = configUserRepository.findByUserName(userName);
+        Integer baseDay = baseStep(configUsers,params);
+        Integer optionalDay = optionalStep(configUsers,params);
+
+        List<HolidayRecord> holidayRecords = holidayRecordRepository.findByUserNameAndStatus(userName,"成功");
+        Long usedDay = 0L;
+        for (HolidayRecord h : holidayRecords){
+            usedDay += h.getCount();
+        }
+        int[] resArray = new int[2];
+        resArray[0] = baseDay + optionalDay;
+        resArray[1] = usedDay.intValue();
+
+        return resArray;
+    }
+
+    private Integer optionalStep(List<ConfigUser> configUsers, Map<String, Integer> params) {
+        Integer option1 = params.get("特殊假累加-晚婚假");
+        Integer option2 = params.get("特殊假累加-正常婚假");
+        Integer option3 = params.get("特殊假累加-晚育产假");
+        Integer option4 = params.get("特殊假累加-正常产假");
+        Integer option5 = params.get("特殊假累加-陪产假");
+        Integer option6 = params.get("特殊假累加-子女中高考假");
+        Integer option7 = params.get("特殊假累加-直系亲属重病");
+        Integer option8 = params.get("丧假");
+
+        Integer optionDay = 0;
+
+        for (ConfigUser c: configUsers){
+            String conditionItem = c.getConditionItem();
+            if("晚婚假".equals(conditionItem)){
+                optionDay += option1;
+            }else if("正常婚假".equals(conditionItem)){
+                optionDay += option2;
+            }else if("晚育产假".equals(conditionItem)){
+                optionDay += option3;
+            }else if("正常产假".equals(conditionItem)){
+                optionDay += option4;
+            }else if("陪产假".equals(conditionItem)){
+                optionDay += option5;
+            }else if("子女中高考假".equals(conditionItem)){
+                optionDay += option6;
+            }else if("直属亲属重病".equals(conditionItem)){
+                optionDay += option7;
+            }else if("丧假".equals(conditionItem)){
+                optionDay += option8;
+            }
+
+        }
+        return optionDay;
+    }
+
+    private Integer baseStep(List<ConfigUser> configUsers, Map<String,Integer> params) {
+
+        Integer base1 = params.get("基本条件判断步骤1-包含同时探望父母和配偶");
+        Integer base2 = params.get("基本条件判断步骤2-包含仅探望配偶");
+        Integer base3 = params.get("基本条件判断步骤3-工作20年以上或未婚探望父母");
+        Integer base4 = params.get("基本条件判断步骤4-工作不满20年或已婚探望父母");
+        Integer base5 = params.get("基本条件判断步骤5-无任何基本条件配置");
+
+        for (ConfigUser c: configUsers){
+            String conditionItem = c.getConditionItem();
+            if("父母、配偶均异地（优待）".equals(conditionItem)){
+                return base1;
+            }else if("探望配偶".equals(conditionItem)){
+                return base2;
+            }else if("参加工作满20年以上".equals(conditionItem) || "未婚探望父母".equals(conditionItem)){
+                return base3;
+            }else if("参加工作不满20年".equals(conditionItem) || "已婚探望父母".equals(conditionItem)){
+                return base4;
+            }
+        }
+        return base5;
     }
 }

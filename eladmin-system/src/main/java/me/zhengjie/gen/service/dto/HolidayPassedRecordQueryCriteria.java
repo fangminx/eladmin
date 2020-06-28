@@ -13,17 +13,17 @@
 *  See the License for the specific language governing permissions and
 *  limitations under the License.
 */
-package me.zhengjie.gen.repository;
+package me.zhengjie.gen.service.dto;
 
-import me.zhengjie.gen.domain.ConfigParam;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import lombok.Data;
+import java.util.List;
+import me.zhengjie.annotation.Query;
 
 /**
 * @website https://el-admin.vip
 * @author fangmin
-* @date 2020-06-24
+* @date 2020-06-28
 **/
-public interface ConfigParamRepository extends JpaRepository<ConfigParam, Long>, JpaSpecificationExecutor<ConfigParam> {
-    ConfigParam findByName(String name);
+@Data
+public class HolidayPassedRecordQueryCriteria{
 }

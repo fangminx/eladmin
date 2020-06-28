@@ -18,41 +18,43 @@ package me.zhengjie.gen.service.dto;
 import lombok.Data;
 import java.sql.Timestamp;
 import java.io.Serializable;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 
 /**
 * @website https://el-admin.vip
 * @description /
 * @author fangmin
-* @date 2020-06-18
+* @date 2020-06-28
 **/
 @Data
-public class ConfigUserDto implements Serializable {
+public class HolidayPassedRecordDto implements Serializable {
 
+    /** 防止精度丢失 */
+    @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
 
-    /** 用户名 */
-    private String userName;
+    /** 对应请假记录表 */
+    private Long recordId;
+
+    /** 被抵消者 */
+    private String passedUser;
+
+    /** 被抵消者权重 */
+    private String passedWeight;
+
+    /** 高优先级用户 */
+    private String priorityUser;
+
+    /** 高优先级用户权重 */
+    private String priorityWeight;
 
     /** 部门名称 */
     private String deptName;
 
-    /** 手机号 */
-    private Long userPhone;
-
-    /** 条件类别 */
-    private String conditions;
-
-    /** 条件项 */
-    private String conditionItem;
-
-    /** 条件权重 */
-    private Long conditionWeight;
-
-    private String createBy;
-
-    private String updateBy;
-
+    /** 数据创建时间 */
     private Timestamp createTime;
 
+    /** 数据最近一次修改时间 */
     private Timestamp updateTime;
 }

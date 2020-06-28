@@ -512,4 +512,30 @@ public class DateUtil {
                 // 把流收集为List
                 .collect(Collectors.toList());
     }
+
+    /**
+     * 得到几天前的时间
+     * @param date
+     * @param day
+     * @return
+     */
+    public static Date getDateBefore(Date date,int day){
+        Calendar now =Calendar.getInstance();
+        now.setTime(date);
+        now.set(Calendar.DATE,now.get(Calendar.DATE)-day);
+        return now.getTime();
+    }
+
+    /**
+     * 得到几天后的时间
+     * @param date
+     * @param day
+     * @return
+     */
+    public static Date getDateAfter(Date date,int day){
+        Calendar now =Calendar.getInstance();
+        now.setTime(date);
+        now.set(Calendar.DATE,now.get(Calendar.DATE)+day);
+        return now.getTime();
+    }
 }

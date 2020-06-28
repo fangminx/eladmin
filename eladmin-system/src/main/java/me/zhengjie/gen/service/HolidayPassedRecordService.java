@@ -15,9 +15,9 @@
 */
 package me.zhengjie.gen.service;
 
-import me.zhengjie.gen.domain.ConfigUser;
-import me.zhengjie.gen.service.dto.ConfigUserDto;
-import me.zhengjie.gen.service.dto.ConfigUserQueryCriteria;
+import me.zhengjie.gen.domain.HolidayPassedRecord;
+import me.zhengjie.gen.service.dto.HolidayPassedRecordDto;
+import me.zhengjie.gen.service.dto.HolidayPassedRecordQueryCriteria;
 import org.springframework.data.domain.Pageable;
 import java.util.Map;
 import java.util.List;
@@ -28,9 +28,9 @@ import javax.servlet.http.HttpServletResponse;
 * @website https://el-admin.vip
 * @description 服务接口
 * @author fangmin
-* @date 2020-06-18
+* @date 2020-06-28
 **/
-public interface ConfigUserService {
+public interface HolidayPassedRecordService {
 
     /**
     * 查询数据分页
@@ -38,34 +38,34 @@ public interface ConfigUserService {
     * @param pageable 分页参数
     * @return Map<String,Object>
     */
-    Map<String,Object> queryAll(ConfigUserQueryCriteria criteria, Pageable pageable);
+    Map<String,Object> queryAll(HolidayPassedRecordQueryCriteria criteria, Pageable pageable);
 
     /**
     * 查询所有数据不分页
     * @param criteria 条件参数
-    * @return List<ConfigUserDto>
+    * @return List<HolidayPassedRecordDto>
     */
-    List<ConfigUserDto> queryAll(ConfigUserQueryCriteria criteria);
+    List<HolidayPassedRecordDto> queryAll(HolidayPassedRecordQueryCriteria criteria);
 
     /**
      * 根据ID查询
      * @param id ID
-     * @return ConfigUserDto
+     * @return HolidayPassedRecordDto
      */
-    ConfigUserDto findById(Long id);
+    HolidayPassedRecordDto findById(Long id);
 
     /**
     * 创建
     * @param resources /
-    * @return ConfigUserDto
+    * @return HolidayPassedRecordDto
     */
-    ConfigUserDto create(ConfigUser resources);
+    HolidayPassedRecordDto create(HolidayPassedRecord resources);
 
     /**
     * 编辑
     * @param resources /
     */
-    void update(ConfigUser resources);
+    void update(HolidayPassedRecord resources);
 
     /**
     * 多选删除
@@ -79,12 +79,5 @@ public interface ConfigUserService {
     * @param response /
     * @throws IOException /
     */
-    void download(List<ConfigUserDto> all, HttpServletResponse response) throws IOException;
-
-    /**
-     * 查询用户的假期总数和已使用的假期总数
-     * @param userName
-     * @return
-     */
-    int[] findAllHolidayAndUsedHolidayByUserName(String userName);
+    void download(List<HolidayPassedRecordDto> all, HttpServletResponse response) throws IOException;
 }
