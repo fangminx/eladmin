@@ -52,7 +52,7 @@ import java.util.Map;
 */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = "dict")
+@CacheConfig(cacheNames = "mydict")
 public class MyDictDetailServiceImpl implements MyDictDetailService {
 
     private final MyDictRepository dictRepository;
@@ -102,6 +102,6 @@ public class MyDictDetailServiceImpl implements MyDictDetailService {
 
     public void delCaches(MyDictDetail dictDetail){
         MyDict dict = dictRepository.findById(dictDetail.getDict().getId()).orElseGet(MyDict::new);
-        redisUtils.del("mydept::name:" + dict.getName());
+        redisUtils.del("mydict::name:" + dict.getName());
     }
 }

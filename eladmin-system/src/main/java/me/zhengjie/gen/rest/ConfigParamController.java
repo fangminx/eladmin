@@ -46,7 +46,7 @@ public class ConfigParamController {
     @Log("导出数据")
     @ApiOperation("导出数据")
     @GetMapping(value = "/download")
-//    @PreAuthorize("@el.check('configParam:list')")
+    @PreAuthorize("@el.check('configParam:list')")
     public void download(HttpServletResponse response, ConfigParamQueryCriteria criteria) throws IOException {
         configParamService.download(configParamService.queryAll(criteria), response);
     }
@@ -54,7 +54,7 @@ public class ConfigParamController {
     @GetMapping
     @Log("查询参数配置")
     @ApiOperation("查询参数配置")
-//    @PreAuthorize("@el.check('configParam:list')")
+    @PreAuthorize("@el.check('configParam:list')")
     public ResponseEntity<Object> query(ConfigParamQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(configParamService.queryAll(criteria,pageable),HttpStatus.OK);
     }
@@ -62,7 +62,7 @@ public class ConfigParamController {
     @PostMapping
     @Log("新增参数配置")
     @ApiOperation("新增参数配置")
-//    @PreAuthorize("@el.check('configParam:add')")
+    @PreAuthorize("@el.check('configParam:add')")
     public ResponseEntity<Object> create(@Validated @RequestBody ConfigParam resources){
         return new ResponseEntity<>(configParamService.create(resources),HttpStatus.CREATED);
     }
@@ -70,7 +70,7 @@ public class ConfigParamController {
     @PutMapping
     @Log("修改参数配置")
     @ApiOperation("修改参数配置")
-//    @PreAuthorize("@el.check('configParam:edit')")
+    @PreAuthorize("@el.check('configParam:edit')")
     public ResponseEntity<Object> update(@Validated @RequestBody ConfigParam resources){
         configParamService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -78,7 +78,7 @@ public class ConfigParamController {
 
     @Log("删除参数配置")
     @ApiOperation("删除参数配置")
-//    @PreAuthorize("@el.check('configParam:del')")
+    @PreAuthorize("@el.check('configParam:del')")
     @DeleteMapping
     public ResponseEntity<Object> delete(@RequestBody Long[] ids) {
         configParamService.deleteAll(ids);

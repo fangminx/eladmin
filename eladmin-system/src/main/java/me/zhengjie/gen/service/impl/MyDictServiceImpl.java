@@ -49,7 +49,7 @@ import java.util.*;
 */
 @Service
 @RequiredArgsConstructor
-@CacheConfig(cacheNames = "dict")
+@CacheConfig(cacheNames = "mydict")
 public class MyDictServiceImpl implements MyDictService {
 
     private final MyDictRepository dictRepository;
@@ -146,6 +146,6 @@ public class MyDictServiceImpl implements MyDictService {
     }
 
     public void delCaches(MyDict dict){
-        redisUtils.del("mydept::name:" + dict.getName());
+        redisUtils.del("mydict::name:" + dict.getName());
     }
 }
