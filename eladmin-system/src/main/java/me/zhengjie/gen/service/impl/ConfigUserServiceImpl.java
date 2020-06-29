@@ -20,6 +20,8 @@ import me.zhengjie.gen.domain.ConfigUser;
 import me.zhengjie.gen.domain.HolidayRecord;
 import me.zhengjie.gen.repository.ConfigParamRepository;
 import me.zhengjie.gen.repository.HolidayRecordRepository;
+import me.zhengjie.modules.system.domain.User;
+import me.zhengjie.modules.system.repository.UserRepository;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,9 +36,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 import java.io.IOException;
+import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -53,6 +58,7 @@ public class ConfigUserServiceImpl implements ConfigUserService {
     private final ConfigUserMapper configUserMapper;
     private final ConfigParamRepository configParamRepository;
     private final HolidayRecordRepository holidayRecordRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Map<String,Object> queryAll(ConfigUserQueryCriteria criteria, Pageable pageable){
@@ -76,6 +82,33 @@ public class ConfigUserServiceImpl implements ConfigUserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ConfigUserDto create(ConfigUser resources) {
+        String userName = resources.getUserName();
+        User user = userRepository.findByUsername(userName);
+        if(ObjectUtils.isEmpty(user)){
+            throw new RuntimeException("用户条件关系配置总输入的用户名不存在");
+        }
+        //判断校验
+        List<ConfigUser> configUsers = configUserRepository.findByUserName(userName);
+        if(!CollectionUtils.isEmpty(configUsers)){
+            List<String> items = configUsers.stream().map(c->c.getConditionItem()).collect(Collectors.toList());
+            String thisItem = resources.getConditionItem();
+            if(items.contains("参加工作不满20年") | items.contains("参加工作满20年以上")){
+                if("参加工作不满20年".equals(thisItem) | "参加工作满20年以上".equals(thisItem) ){
+                    throw new RuntimeException("工作年限已配置，请勿重新配置");
+                }
+            }
+            if(items.contains("正常婚假") | items.contains("晚婚假")){
+                if("正常婚假".equals(thisItem) | "晚婚假".equals(thisItem) ){
+                    throw new RuntimeException("婚假已配置，请勿重新配置");
+                }
+            }
+            if(items.contains("正常产假") | items.contains("晚育产假")){
+                if("正常产假".equals(thisItem) | "晚育产假".equals(thisItem) ){
+                    throw new RuntimeException("产假已配置，请勿重新配置");
+                }
+            }
+
+        }
         return configUserMapper.toDto(configUserRepository.save(resources));
     }
 
