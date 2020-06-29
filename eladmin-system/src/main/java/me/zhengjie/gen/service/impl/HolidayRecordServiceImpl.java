@@ -120,6 +120,8 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         Long allCount = deptSimpleDto.getCount();
         Float preRate = deptSimpleDto.getPreRate();
         Long maxCount = Long.valueOf(CalculationUtil.multiply(allCount.toString(), preRate.toString(),0));
+        Integer moveDay = configParamRepository.findByName("最大优先时间（天）").getValue();
+        Long afterTime = DateUtil.getDateAfter(new Date(),moveDay).getTime();
 
         //判断当前用户是否还有假期
         int[] array = configUserService.findAllHolidayAndUsedHolidayByUserName(userName);
@@ -167,7 +169,8 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
                 }
 
 
-                if(thisUserWeight > minWeight){
+                //做了个最大优先时间的判断
+                if(thisUserWeight > minWeight && minRecord.getStartDate().getTime() > afterTime){
                     //当前日期可以抵消对方,记录对方信息
                     passedRecords.add(minRecord);
 
@@ -215,14 +218,12 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
     }
 
     //一个方法，判断包含这个日期的（成功）假期记录
-    //做了一个最大优先时间的考虑，h.getStartDate()向后移动一天
     private List<HolidayRecord> checkIfSatisfiedPreRate(String deptName, String now) {
         List<HolidayRecord> holidayRecords = holidayRecordRepository.findByDeptName(deptName);
-        Integer moveDay = configParamRepository.findByName("最大优先时间（天）").getValue();
         //记录now在这些日期范围的记录
         Long nowDateTime = DateUtil.strToDate(now).getTime();
         List<HolidayRecord> hitRecords = holidayRecords.stream().filter(h->h.getStatus().equals("成功"))
-                .filter(h->nowDateTime >= DateUtil.getDateAfter(h.getStartDate(),moveDay).getTime() && nowDateTime <= h.getEndDate().getTime())
+                .filter(h->nowDateTime >= h.getStartDate().getTime() && nowDateTime <= h.getEndDate().getTime())
                 .collect(Collectors.toList());
          return hitRecords;
     }

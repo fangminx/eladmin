@@ -19,10 +19,13 @@ import me.zhengjie.gen.domain.HolidayPassedRecord;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
+import java.util.List;
+
 /**
 * @website https://el-admin.vip
 * @author fangmin
 * @date 2020-06-28
 **/
 public interface HolidayPassedRecordRepository extends JpaRepository<HolidayPassedRecord, Long>, JpaSpecificationExecutor<HolidayPassedRecord> {
+    List<HolidayPassedRecord> findByRecordId(Long recordId);
 }

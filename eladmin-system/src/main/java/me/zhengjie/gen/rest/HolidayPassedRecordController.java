@@ -15,6 +15,7 @@
 */
 package me.zhengjie.gen.rest;
 
+import io.lettuce.core.dynamic.annotation.Param;
 import me.zhengjie.annotation.Log;
 import me.zhengjie.gen.domain.HolidayPassedRecord;
 import me.zhengjie.gen.service.HolidayPassedRecordService;
@@ -83,5 +84,12 @@ public class HolidayPassedRecordController {
     public ResponseEntity<Object> delete(@RequestBody Long[] ids) {
         holidayPassedRecordService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/record")
+    @Log("根据假期记录表id查抵消记录")
+    @ApiOperation("根据假期记录表id查抵消记录")
+    public ResponseEntity<Object> query(@RequestParam String id){
+        return new ResponseEntity<>(holidayPassedRecordService.findByRecordId(id),HttpStatus.OK);
     }
 }

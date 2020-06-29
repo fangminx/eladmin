@@ -41,6 +41,7 @@ public class HolidayPassedRecord implements Serializable {
     @Id
     @Column(name = "id")
     @ApiModelProperty(value = "id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "record_id")

@@ -32,6 +32,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
+import org.springframework.util.CollectionUtils;
+
 import java.util.List;
 import java.util.Map;
 import java.io.IOException;
@@ -69,6 +71,16 @@ public class HolidayPassedRecordServiceImpl implements HolidayPassedRecordServic
         HolidayPassedRecord holidayPassedRecord = holidayPassedRecordRepository.findById(id).orElseGet(HolidayPassedRecord::new);
         ValidationUtil.isNull(holidayPassedRecord.getId(),"HolidayPassedRecord","id",id);
         return holidayPassedRecordMapper.toDto(holidayPassedRecord);
+    }
+
+    @Override
+    public HolidayPassedRecordDto findByRecordId(String recordId) {
+        Long recordIdLong = Long.valueOf(recordId);
+        List<HolidayPassedRecord> records = holidayPassedRecordRepository.findByRecordId(recordIdLong);
+        if(CollectionUtils.isEmpty(records)){
+           return null;
+        }
+        return holidayPassedRecordMapper.toDto(records.get(0));
     }
 
     @Override

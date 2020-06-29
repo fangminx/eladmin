@@ -80,4 +80,9 @@ public interface HolidayPassedRecordService {
     * @throws IOException /
     */
     void download(List<HolidayPassedRecordDto> all, HttpServletResponse response) throws IOException;
+
+    /**
+     * 根据假期记录表id找到对应的抵消记录
+     */
+    HolidayPassedRecordDto findByRecordId(String recordId);
 }
