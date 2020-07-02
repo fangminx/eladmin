@@ -84,4 +84,11 @@ public class ConfigUserController {
         configUserService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping(value = "/day")
+    @Log("查询用户假期天数")
+    @ApiOperation("查询用户假期天数")
+    public ResponseEntity<Object> query(String userName){
+        return new ResponseEntity<>(configUserService.findAllHolidayAndUsedHolidayByUserName(userName),HttpStatus.OK);
+    }
 }

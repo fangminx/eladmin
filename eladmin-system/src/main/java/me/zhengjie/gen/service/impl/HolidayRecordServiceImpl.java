@@ -136,7 +136,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
             sendMsg("您当前假期还剩："+(array[0]-array[1])+"天, 请减少日期范围", MsgType.error, userPhone.toString());
             throw new RuntimeException("您当前假期还剩："+(array[0]-array[1])+"天， 请减少日期范围");
         } else if ((array[0]-array[1])>=submitDay){
-            sendMsg("您当前假期还剩："+(array[0]-array[1])+"天， 当前提交天数：" +submitDay+ "， 完成休假后，您将还剩下："+((array[0]-array[1])-submitDay)+"天", MsgType.info, userPhone.toString());
+//            sendMsg("您当前假期还剩："+(array[0]-array[1])+"天， 当前提交天数：" +submitDay+ "， 完成休假后，您将还剩下："+((array[0]-array[1])-submitDay)+"天", MsgType.info, userPhone.toString());
         }
 
         //记录可以被抵消的人员请假记录信息
@@ -214,7 +214,9 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
 
         //遍历结束，无论是否抵消别人，当前用户都保存为成功
         resources.setStatus("成功");
-        return holidayRecordMapper.toDto(holidayRecordRepository.save(resources));
+        HolidayRecord holidayRecord = holidayRecordRepository.save(resources);
+        sendMsg("您当前假期还剩："+(array[0]-array[1])+"天， 当前提交天数：" +submitDay+ "， 完成休假后，您将还剩下："+((array[0]-array[1])-submitDay)+"天", MsgType.info, userPhone.toString());
+        return holidayRecordMapper.toDto(holidayRecord);
     }
 
     //一个方法，判断包含这个日期的（成功）假期记录
