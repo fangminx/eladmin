@@ -71,4 +71,7 @@ public class HolidayRecordDto implements Serializable {
 
     /** 手机号 */
     private Long phone;
+
+    /** 请假类型 */
+    private String type;
 }

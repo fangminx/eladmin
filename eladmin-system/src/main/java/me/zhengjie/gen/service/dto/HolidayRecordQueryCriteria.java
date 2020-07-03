@@ -38,4 +38,12 @@ public class HolidayRecordQueryCriteria{
     /** 精确 */
     @Query
     private Long phone;
+
+    /** 精确 */
+    @Query
+    private String type;
+
+    /** 精确 */
+    @Query
+    private String status;
 }

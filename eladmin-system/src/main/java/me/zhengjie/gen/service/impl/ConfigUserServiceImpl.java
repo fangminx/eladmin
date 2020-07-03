@@ -97,6 +97,11 @@ public class ConfigUserServiceImpl implements ConfigUserService {
                     throw new RuntimeException("工作年限已配置，请勿重新配置");
                 }
             }
+            if(items.contains("未婚探望父母") | items.contains("已婚探望父母") | items.contains("探望配偶") | items.contains("父母、配偶均异地（优待）")){
+                if("未婚探望父母".equals(thisItem) | "已婚探望父母".equals(thisItem) | "探望配偶".equals(thisItem)  | "父母、配偶均异地（优待）".equals(thisItem)){
+                    throw new RuntimeException("探亲假已配置，请勿重新配置");
+                }
+            }
             if(items.contains("正常婚假") | items.contains("晚婚假")){
                 if("正常婚假".equals(thisItem) | "晚婚假".equals(thisItem) ){
                     throw new RuntimeException("婚假已配置，请勿重新配置");

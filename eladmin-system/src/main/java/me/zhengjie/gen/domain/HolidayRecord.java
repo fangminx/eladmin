@@ -95,6 +95,11 @@ public class HolidayRecord implements Serializable {
     @ApiModelProperty(value = "手机号")
     private Long phone;
 
+    @Column(name = "type",nullable = false)
+    @NotNull
+    @ApiModelProperty(value = "请假类型")
+    private String type;
+
     public void copy(HolidayRecord source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }

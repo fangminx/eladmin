@@ -60,12 +60,12 @@ public class ConfigUser implements Serializable {
     private Long userPhone;
 
     @Column(name = "conditions",nullable = false)
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "条件类别")
     private String conditions;
 
     @Column(name = "condition_item",nullable = false)
-    @NotBlank
+    @NotNull
     @ApiModelProperty(value = "条件项")
     private String conditionItem;
 
