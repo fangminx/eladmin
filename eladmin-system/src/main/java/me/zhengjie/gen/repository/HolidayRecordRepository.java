@@ -38,4 +38,6 @@ public interface HolidayRecordRepository extends JpaRepository<HolidayRecord, Lo
     void updateStatusById(Long id, String status);
 
     List<HolidayRecord> findByUserNameAndStatus(String userName,String status);
+
+    List<HolidayRecord> findByUserNameAndResult(String userName,String result);
 }

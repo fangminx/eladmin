@@ -226,7 +226,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         List<HolidayRecord> holidayRecords = holidayRecordRepository.findByDeptName(deptName);
         //记录now在这些日期范围的记录
         Long nowDateTime = DateUtil.strToDate(now).getTime();
-        List<HolidayRecord> hitRecords = holidayRecords.stream().filter(h->"成功".equals(h.getStatus()) || "管理员确认".equals(h.getStatus()))
+        List<HolidayRecord> hitRecords = holidayRecords.stream().filter(h->"成功".equals(h.getStatus()) && !"未休假".equals(h.getResult()))
                 .filter(h->nowDateTime >= h.getStartDate().getTime() && nowDateTime <= h.getEndDate().getTime())
                 .collect(Collectors.toList());
          return hitRecords;

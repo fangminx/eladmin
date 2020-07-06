@@ -164,13 +164,16 @@ public class ConfigUserServiceImpl implements ConfigUserService {
         Integer baseDay = baseStep(configUsers,params);
         Integer optionalDay = optionalStep(configUsers,params);
 
-        List<HolidayRecord> holidayRecordsSuccess = holidayRecordRepository.findByUserNameAndStatus(userName,"成功");
-        List<HolidayRecord> holidayRecordsConfirm = holidayRecordRepository.findByUserNameAndStatus(userName,"管理员确认");
+        List<HolidayRecord> holidayRecordsSuccess = holidayRecordRepository.findByUserNameAndStatus(userName,"成功")
+                              .stream().filter(h->!"未休假".equals(h.getResult())).collect(Collectors.toList());
+
+        List<HolidayRecord> holidayRecordsResult = holidayRecordRepository.findByUserNameAndResult(userName,"已休完")
+                              .stream().filter(h->!"成功".equals(h.getStatus())).collect(Collectors.toList());
         Long usedDay = 0L;
         for (HolidayRecord h : holidayRecordsSuccess){
             usedDay += h.getCount();
         }
-        for (HolidayRecord h : holidayRecordsConfirm){
+        for (HolidayRecord h : holidayRecordsResult){
             usedDay += h.getCount();
         }
         int[] resArray = new int[2];

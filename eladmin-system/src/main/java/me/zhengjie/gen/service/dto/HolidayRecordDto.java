@@ -74,4 +74,7 @@ public class HolidayRecordDto implements Serializable {
 
     /** 请假类型 */
     private String type;
+
+    /** 休假结果 */
+    private String result;
 }

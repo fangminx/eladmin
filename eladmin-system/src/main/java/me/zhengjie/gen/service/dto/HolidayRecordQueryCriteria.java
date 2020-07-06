@@ -46,4 +46,8 @@ public class HolidayRecordQueryCriteria{
     /** 精确 */
     @Query
     private String status;
+
+    /** 精确 */
+    @Query
+    private String result;
 }

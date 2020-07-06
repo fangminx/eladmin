@@ -100,6 +100,10 @@ public class HolidayRecord implements Serializable {
     @ApiModelProperty(value = "请假类型")
     private String type;
 
+    @Column(name = "result")
+    @ApiModelProperty(value = "休假结果")
+    private String result;
+
     public void copy(HolidayRecord source){
         BeanUtil.copyProperties(source,this, CopyOptions.create().setIgnoreNullValue(true));
     }
