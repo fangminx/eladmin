@@ -37,6 +37,7 @@ import me.zhengjie.gen.service.dto.HolidayRecordQueryCriteria;
 import me.zhengjie.gen.service.mapstruct.HolidayRecordMapper;
 import me.zhengjie.utils.calc.CalculationUtil;
 import me.zhengjie.utils.date.DateUtil;
+import me.zhengjie.utils.sms.SmTool;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import cn.hutool.core.lang.Snowflake;
@@ -208,6 +209,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
             holidayPassedRecord.setPriorityWeight(calculateUserWeight(userName).toString());
             holidayPassedRecordRepository.save(holidayPassedRecord);
             sendMsg("您有一条请假记录被高优先级用户："+ userName + "抵消，请注意查看", MsgType.error, passed.getPhone().toString());
+            SmTool.sendSmMsg("您好，您有一条请假记录被抵消，请注意查看", passed.getPhone().toString());
 
 
         }
@@ -253,6 +255,8 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         holidayRecord.setStartDate(start);
         holidayRecord.setEndDate(end);
         holidayRecordRepository.save(holidayRecord);
+        //管理员修改后发送短信
+        SmTool.sendSmMsg("您好，您有一条请假记录已被管理员变更，请注意查看",holidayRecord.getPhone().toString());
     }
 
     @Override
