@@ -46,6 +46,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
+import org.springframework.util.ObjectUtils;
 
 import java.text.ParseException;
 import java.util.*;
@@ -236,8 +237,10 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
     private Long calculateUserWeight(String userName){
         List<ConfigUser> configUsers = configUserRepository.findByUserName(userName);
         Long userWeight = 0L;
-        for(int i=0; i<configUsers.size(); i++){
-            userWeight += configUsers.get(i).getConditionWeight();
+        for(ConfigUser c: configUsers){
+            if(!ObjectUtils.isEmpty(c.getConditionWeight())){
+                userWeight += c.getConditionWeight();
+            }
         }
         return userWeight;
     }
