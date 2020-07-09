@@ -20,6 +20,7 @@ import me.zhengjie.gen.domain.ConfigUser;
 import me.zhengjie.gen.domain.HolidayRecord;
 import me.zhengjie.gen.repository.ConfigParamRepository;
 import me.zhengjie.gen.repository.HolidayRecordRepository;
+import me.zhengjie.gen.service.HolidayRecordService;
 import me.zhengjie.modules.system.domain.User;
 import me.zhengjie.modules.system.repository.UserRepository;
 import me.zhengjie.utils.ValidationUtil;
@@ -193,9 +194,28 @@ public class ConfigUserServiceImpl implements ConfigUserService {
             map.put("用户名",u);
             map.put("假期总数",days[0]);
             map.put("已用假期",days[1]);
+            map.put("优先级",calculateUserWeight(u));
             list.add(map);
         }
+
+        list = list.stream().sorted((o1, o2) -> {
+            Long groupScore1 = Long.parseLong(o1.get("优先级").toString());
+            Long groupScore2 = Long.parseLong(o2.get("优先级").toString());
+            return Long.compare(groupScore2, groupScore1);
+        }).collect(Collectors.toList());
         return list;
+    }
+
+    //一个方法，计算用户当前的优先级（权重）
+    private Long calculateUserWeight(String userName){
+        List<ConfigUser> configUsers = configUserRepository.findByUserName(userName);
+        Long userWeight = 0L;
+        for(ConfigUser c: configUsers){
+            if(!ObjectUtils.isEmpty(c.getConditionWeight())){
+                userWeight += c.getConditionWeight();
+            }
+        }
+        return userWeight;
     }
 
     private Integer optionalStep(List<ConfigUser> configUsers, Map<String, Integer> params) {
