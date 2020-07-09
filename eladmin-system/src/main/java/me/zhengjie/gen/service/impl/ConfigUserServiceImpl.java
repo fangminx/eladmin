@@ -183,6 +183,21 @@ public class ConfigUserServiceImpl implements ConfigUserService {
         return resArray;
     }
 
+    @Override
+    public List<Map<String,Object>> findAllUserHolidayForShowVChar() {
+        List<String> users = userRepository.findAll().stream().map(u->u.getUsername()).collect(Collectors.toList());
+        List<Map<String,Object>> list = new ArrayList<>();
+        for(String u: users){
+            Map<String,Object> map = new HashMap<>();
+            int[] days = findAllHolidayAndUsedHolidayByUserName(u);
+            map.put("用户名",u);
+            map.put("假期总数",days[0]);
+            map.put("已用假期",days[1]);
+            list.add(map);
+        }
+        return list;
+    }
+
     private Integer optionalStep(List<ConfigUser> configUsers, Map<String, Integer> params) {
         Integer option1 = params.get("特殊假累加-晚婚假");
         Integer option2 = params.get("特殊假累加-正常婚假");

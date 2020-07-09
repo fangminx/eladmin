@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 **/
 @RestController
 @RequiredArgsConstructor
-@Api(tags = "用户荣誉条件配置管理")
+@Api(tags = "用户条件配置管理")
 @RequestMapping("/api/configUser")
 public class ConfigUserController {
 
@@ -52,32 +52,32 @@ public class ConfigUserController {
     }
 
     @GetMapping
-    @Log("查询用户荣誉条件配置")
-    @ApiOperation("查询用户荣誉条件配置")
+    @Log("查询用户条件配置")
+    @ApiOperation("查询用户条件配置")
     @PreAuthorize("@el.check('configUser:list')")
     public ResponseEntity<Object> query(ConfigUserQueryCriteria criteria, Pageable pageable){
         return new ResponseEntity<>(configUserService.queryAll(criteria,pageable),HttpStatus.OK);
     }
 
     @PostMapping
-    @Log("新增用户荣誉条件配置")
-    @ApiOperation("新增用户荣誉条件配置")
+    @Log("新增用户条件配置")
+    @ApiOperation("新增用户条件配置")
     @PreAuthorize("@el.check('configUser:add')")
     public ResponseEntity<Object> create(@Validated @RequestBody ConfigUser resources){
         return new ResponseEntity<>(configUserService.create(resources),HttpStatus.CREATED);
     }
 
     @PutMapping
-    @Log("修改用户荣誉条件配置")
-    @ApiOperation("修改用户荣誉条件配置")
+    @Log("修改用户条件配置")
+    @ApiOperation("修改用户条件配置")
     @PreAuthorize("@el.check('configUser:edit')")
     public ResponseEntity<Object> update(@Validated @RequestBody ConfigUser resources){
         configUserService.update(resources);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @Log("删除用户荣誉条件配置")
-    @ApiOperation("删除用户荣誉条件配置")
+    @Log("删除用户条件配置")
+    @ApiOperation("删除用户条件配置")
     @PreAuthorize("@el.check('configUser:del')")
     @DeleteMapping
     public ResponseEntity<Object> delete(@RequestBody Long[] ids) {
@@ -90,5 +90,12 @@ public class ConfigUserController {
     @ApiOperation("查询用户假期天数")
     public ResponseEntity<Object> query(String userName){
         return new ResponseEntity<>(configUserService.findAllHolidayAndUsedHolidayByUserName(userName),HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/day/all")
+    @Log("查询所有用户假期天数")
+    @ApiOperation("查询所有用户假期天数")
+    public ResponseEntity<Object> queryForVChar(){
+        return new ResponseEntity<>(configUserService.findAllUserHolidayForShowVChar(),HttpStatus.OK);
     }
 }

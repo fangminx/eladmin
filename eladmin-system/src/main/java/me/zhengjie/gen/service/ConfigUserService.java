@@ -87,4 +87,9 @@ public interface ConfigUserService {
      * @return
      */
     int[] findAllHolidayAndUsedHolidayByUserName(String userName);
+
+    /**
+     * 查询所有人的假期情况
+     */
+    List<Map<String,Object>> findAllUserHolidayForShowVChar();
 }
