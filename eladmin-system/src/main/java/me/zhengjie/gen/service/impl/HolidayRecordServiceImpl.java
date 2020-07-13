@@ -178,8 +178,8 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
 
                 }else {
                     //必然失败
-                    sendMsg(now + "已达到最大申请人数，且您的优先级不足，无法抵消其他人", MsgType.error, userPhone.toString());
-                    throw new RuntimeException(now + "已达到最大申请人数，且您的优先级不足，无法抵消其他人");
+                    sendMsg(now + "已达到最大申请人数", MsgType.error, userPhone.toString());
+                    throw new RuntimeException(now + "已达到最大申请人数");
                 }
 
             }else {
@@ -190,27 +190,36 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
 
         //遍历结束，当前用户优先级高，准备抵消别人的请假记录
         if(passedRecords.size()>0) {
-            HolidayRecord passed = passedRecords.get(0);
-            Long minPassedWeight = calculateUserWeight(passed.getUserName());
-            for (HolidayRecord pass : passedRecords) {
-                Long hitPassedWeight = calculateUserWeight(passed.getUserName());
-                if (hitPassedWeight < minPassedWeight) {
-                    minPassedWeight = hitPassedWeight;
-                    passed = pass;
-                }
-            }
-            holidayRecordRepository.updateStatusById(passed.getId(),"被抵消");
-            //被抵消记录表做相关记录
-            HolidayPassedRecord holidayPassedRecord = new HolidayPassedRecord();
-            holidayPassedRecord.setRecordId(passed.getId());
-            holidayPassedRecord.setDeptName(passed.getDeptName());
-            holidayPassedRecord.setPassedUser(passed.getUserName());
-            holidayPassedRecord.setPassedWeight(minPassedWeight.toString());
-            holidayPassedRecord.setPriorityUser(userName);
-            holidayPassedRecord.setPriorityWeight(calculateUserWeight(userName).toString());
-            holidayPassedRecordRepository.save(holidayPassedRecord);
-            sendMsg("您有一条请假记录被高优先级用户："+ userName + "抵消，请注意查看", MsgType.error, passed.getPhone().toString());
-            SmTool.sendSmMsg("您好，您有一条请假记录被抵消，请注意查看", passed.getPhone().toString());
+            List<HolidayRecord> passedList = passedRecords.stream().distinct().collect(Collectors.toList());
+
+            //这里是寻找最低的权重，但可能会抵消多个人====
+//            HolidayRecord passed = passedRecords.get(0);
+//            Long minPassedWeight = calculateUserWeight(passed.getUserName());
+//            for (HolidayRecord pass : passedRecords) {
+//                Long hitPassedWeight = calculateUserWeight(passed.getUserName());
+//                if (hitPassedWeight < minPassedWeight) {
+//                    minPassedWeight = hitPassedWeight;
+//                    passed = pass;
+//                }
+//            }
+            //===
+
+            passedList.stream().forEach(p->{
+                holidayRecordRepository.updateStatusById(p.getId(),"被抵消");
+                //被抵消记录表做相关记录
+                HolidayPassedRecord holidayPassedRecord = new HolidayPassedRecord();
+                holidayPassedRecord.setRecordId(p.getId());
+                holidayPassedRecord.setDeptName(p.getDeptName());
+                holidayPassedRecord.setPassedUser(p.getUserName());
+                holidayPassedRecord.setPassedWeight(p.toString());
+                holidayPassedRecord.setPriorityUser(userName);
+                holidayPassedRecord.setPriorityWeight(calculateUserWeight(userName).toString());
+                holidayPassedRecordRepository.save(holidayPassedRecord);
+                sendMsg("您有一条请假记录被高优先级用户："+ userName + " 抵消，请注意查看", MsgType.error, p.getPhone().toString());
+                SmTool.sendSmMsg("您好，您有一条请假记录被抵消，请注意查看", p.getPhone().toString());
+            });
+
+
 
 
         }

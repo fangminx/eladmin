@@ -84,5 +84,5 @@ public interface HolidayPassedRecordService {
     /**
      * 根据假期记录表id找到对应的抵消记录
      */
-    HolidayPassedRecordDto findByRecordId(String recordId);
+    Map<String,List<Object[]>> findByRecordId(String recordId);
 }

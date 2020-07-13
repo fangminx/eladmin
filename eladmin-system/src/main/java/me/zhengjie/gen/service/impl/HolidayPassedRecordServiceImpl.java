@@ -15,7 +15,9 @@
 */
 package me.zhengjie.gen.service.impl;
 
+import me.zhengjie.gen.domain.ConfigUser;
 import me.zhengjie.gen.domain.HolidayPassedRecord;
+import me.zhengjie.gen.repository.ConfigUserRepository;
 import me.zhengjie.utils.ValidationUtil;
 import me.zhengjie.utils.FileUtil;
 import lombok.RequiredArgsConstructor;
@@ -34,12 +36,9 @@ import me.zhengjie.utils.PageUtil;
 import me.zhengjie.utils.QueryHelp;
 import org.springframework.util.CollectionUtils;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
 
 /**
 * @website https://el-admin.vip
@@ -53,6 +52,7 @@ public class HolidayPassedRecordServiceImpl implements HolidayPassedRecordServic
 
     private final HolidayPassedRecordRepository holidayPassedRecordRepository;
     private final HolidayPassedRecordMapper holidayPassedRecordMapper;
+    private final ConfigUserRepository configUserRepository;
 
     @Override
     public Map<String,Object> queryAll(HolidayPassedRecordQueryCriteria criteria, Pageable pageable){
@@ -74,13 +74,34 @@ public class HolidayPassedRecordServiceImpl implements HolidayPassedRecordServic
     }
 
     @Override
-    public HolidayPassedRecordDto findByRecordId(String recordId) {
+    public Map<String,List<Object[]>> findByRecordId(String recordId) {
         Long recordIdLong = Long.valueOf(recordId);
         List<HolidayPassedRecord> records = holidayPassedRecordRepository.findByRecordId(recordIdLong);
         if(CollectionUtils.isEmpty(records)){
            return null;
         }
-        return holidayPassedRecordMapper.toDto(records.get(0));
+        HolidayPassedRecord record = records.get(0);
+        List<ConfigUser> pass = configUserRepository.findForShowWeightDetail(record.getPassedUser());
+        List<ConfigUser> pre = configUserRepository.findForShowWeightDetail(record.getPriorityUser());
+
+        Map<String,List<Object[]>> map = new HashMap<>();
+        List<Object[]> listPass = new ArrayList<>();
+        List<Object[]> listPre = new ArrayList<>();
+        if(pass.size()>0) {
+            pass.stream().forEach(p -> {
+                Object[] o = {p.getUserName(),p.getConditions(), p.getConditionItem(), p.getConditionWeight()};
+                listPass.add(o);
+            });
+        }
+        if(pre.size()>0) {
+            pre.stream().forEach(p -> {
+                Object[] o = {p.getUserName(),p.getConditions(), p.getConditionItem(), p.getConditionWeight()};
+                listPre.add(o);
+            });
+        }
+        map.put("pass",listPass);
+        map.put("pre",listPre);
+        return map;
     }
 
     @Override

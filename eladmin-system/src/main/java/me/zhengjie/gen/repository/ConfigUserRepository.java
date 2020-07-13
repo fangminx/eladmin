@@ -18,6 +18,7 @@ package me.zhengjie.gen.repository;
 import me.zhengjie.gen.domain.ConfigUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -28,4 +29,8 @@ import java.util.List;
 **/
 public interface ConfigUserRepository extends JpaRepository<ConfigUser, Long>, JpaSpecificationExecutor<ConfigUser> {
     List<ConfigUser> findByUserName(String userName);
+
+    @Query(value = "SELECT c.* FROM config_user c WHERE" +
+            " c.user_name = ?1 AND c.condition_weight <> 0 AND c.condition_weight is not NULL", nativeQuery = true)
+    List<ConfigUser> findForShowWeightDetail(String userName);
 }
