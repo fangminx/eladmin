@@ -193,7 +193,7 @@ public class ConfigUserServiceImpl implements ConfigUserService {
             int[] days = findAllHolidayAndUsedHolidayByUserName(u);
             map.put("用户名",u);
             map.put("假期总数",days[0]);
-            map.put("已用假期",days[1]);
+            map.put("剩余假期",days[0] - days[1]);
             map.put("优先级",calculateUserWeight(u));
             list.add(map);
         }
