@@ -211,7 +211,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
                 holidayPassedRecord.setRecordId(p.getId());
                 holidayPassedRecord.setDeptName(p.getDeptName());
                 holidayPassedRecord.setPassedUser(p.getUserName());
-                holidayPassedRecord.setPassedWeight(p.toString());
+                holidayPassedRecord.setPassedWeight(calculateUserWeight(p.getUserName()).toString());
                 holidayPassedRecord.setPriorityUser(userName);
                 holidayPassedRecord.setPriorityWeight(calculateUserWeight(userName).toString());
                 holidayPassedRecordRepository.save(holidayPassedRecord);
