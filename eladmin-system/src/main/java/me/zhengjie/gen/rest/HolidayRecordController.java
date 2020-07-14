@@ -84,4 +84,11 @@ public class HolidayRecordController {
         holidayRecordService.deleteAll(ids);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    @GetMapping(value = "/canlendarInfo")
+    @Log("查询请假记录")
+    @ApiOperation("查询请假记录")
+    public ResponseEntity<Object> getCanlendarInfoByUserName(String userName){
+        return new ResponseEntity<>(holidayRecordService.getCanlendarInfoByUserName(userName),HttpStatus.OK);
+    }
 }

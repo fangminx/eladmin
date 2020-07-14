@@ -28,8 +28,7 @@ import me.zhengjie.modules.mnt.websocket.SocketMsg;
 import me.zhengjie.modules.mnt.websocket.WebSocketServer;
 import me.zhengjie.modules.system.service.DeptService;
 import me.zhengjie.modules.system.service.dto.DeptSimpleDto;
-import me.zhengjie.utils.ValidationUtil;
-import me.zhengjie.utils.FileUtil;
+import me.zhengjie.utils.*;
 import lombok.RequiredArgsConstructor;
 import me.zhengjie.gen.service.HolidayRecordService;
 import me.zhengjie.gen.service.dto.HolidayRecordDto;
@@ -44,8 +43,7 @@ import cn.hutool.core.lang.Snowflake;
 import cn.hutool.core.util.IdUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import me.zhengjie.utils.PageUtil;
-import me.zhengjie.utils.QueryHelp;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
 import java.text.ParseException;
@@ -295,5 +293,31 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
             list.add(map);
         }
         FileUtil.downloadExcel(list, response);
+    }
+
+    @Override
+    public List<Map<String,Object>> getCanlendarInfoByUserName(String userName) {
+        List<Map<String,Object>> resList = new ArrayList<>();
+        List<HolidayRecord> holidayRecords = holidayRecordRepository.findByUserName(userName);
+        if(CollectionUtils.isEmpty(holidayRecords)){
+            return resList;
+        }
+        holidayRecords.stream().forEach(h->{
+            Date start = h.getStartDate();
+            Date end = h.getEndDate();
+            DateUtil.collectLocalDates(DateUtil.date2Str(start),DateUtil.date2Str(end)).forEach(now -> {
+                Map<String,Object> map = new HashMap<>();
+                map.put("date",now);
+                String content = "";
+                if(ObjectUtils.isEmpty(h.getResult())){
+                    content = h.getStatus().equals("成功")?"申请成功" : h.getStatus();
+                }else {
+                    content = h.getResult();
+                }
+                map.put("content",content);
+                resList.add(map);
+            });
+        });
+        return resList;
     }
 }

@@ -80,4 +80,6 @@ public interface HolidayRecordService {
     * @throws IOException /
     */
     void download(List<HolidayRecordDto> all, HttpServletResponse response) throws IOException;
+
+    List<Map<String,Object>> getCanlendarInfoByUserName(String userName);
 }

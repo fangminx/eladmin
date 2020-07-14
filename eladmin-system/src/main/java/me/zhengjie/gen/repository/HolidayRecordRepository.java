@@ -40,4 +40,6 @@ public interface HolidayRecordRepository extends JpaRepository<HolidayRecord, Lo
     List<HolidayRecord> findByUserNameAndStatus(String userName,String status);
 
     List<HolidayRecord> findByUserNameAndResult(String userName,String result);
+
+    List<HolidayRecord> findByUserName(String userName);
 }
