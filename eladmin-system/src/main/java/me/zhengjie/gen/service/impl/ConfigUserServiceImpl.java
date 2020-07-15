@@ -219,6 +219,11 @@ public class ConfigUserServiceImpl implements ConfigUserService {
     }
 
     private Integer optionalStep(List<ConfigUser> configUsers, Map<String, Integer> params) {
+
+        if(CollectionUtils.isEmpty(configUsers)){
+            return 0;
+        }
+
         Integer option1 = params.get("特殊假累加-晚婚假");
         Integer option2 = params.get("特殊假累加-正常婚假");
         Integer option3 = params.get("特殊假累加-晚育产假");
@@ -230,23 +235,25 @@ public class ConfigUserServiceImpl implements ConfigUserService {
 
         Integer optionDay = 0;
 
-        for (ConfigUser c: configUsers){
-            String conditionItem = c.getConditionItem();
-            if("晚婚假".equals(conditionItem)){
+        List<String> conditionItems = configUsers.stream().map(c->c.getConditionItem()).collect(Collectors.toList());
+
+        for (String item: conditionItems){
+
+            if("晚婚假".equals(item)){
                 optionDay += option1;
-            }else if("正常婚假".equals(conditionItem)){
+            }else if("正常婚假".equals(item)){
                 optionDay += option2;
-            }else if("晚育产假".equals(conditionItem)){
+            }else if("晚育产假".equals(item)){
                 optionDay += option3;
-            }else if("正常产假".equals(conditionItem)){
+            }else if("正常产假".equals(item)){
                 optionDay += option4;
-            }else if("陪产假".equals(conditionItem)){
+            }else if("陪产假".equals(item)){
                 optionDay += option5;
-            }else if("子女中高考假".equals(conditionItem)){
+            }else if("子女中高考假".equals(item)){
                 optionDay += option6;
-            }else if("直属亲属重病".equals(conditionItem)){
+            }else if("直属亲属重病".equals(item)){
                 optionDay += option7;
-            }else if("丧假".equals(conditionItem)){
+            }else if("丧假".equals(item)){
                 optionDay += option8;
             }
 
@@ -262,17 +269,22 @@ public class ConfigUserServiceImpl implements ConfigUserService {
         Integer base4 = params.get("基本条件判断步骤4-工作不满20年或已婚探望父母");
         Integer base5 = params.get("基本条件判断步骤5-无任何基本条件配置");
 
-        for (ConfigUser c: configUsers){
-            String conditionItem = c.getConditionItem();
-            if("父母、配偶均异地（优待）".equals(conditionItem)){
-                return base1;
-            }else if("探望配偶".equals(conditionItem)){
-                return base2;
-            }else if("参加工作满20年以上".equals(conditionItem) || "未婚探望父母".equals(conditionItem)){
-                return base3;
-            }else if("参加工作不满20年".equals(conditionItem) || "已婚探望父母".equals(conditionItem)){
-                return base4;
-            }
+        if(CollectionUtils.isEmpty(configUsers)){
+            return base5;
+        }
+        List<String> conditionItems = configUsers.stream().map(c->c.getConditionItem()).collect(Collectors.toList());
+
+        if (conditionItems.contains("父母、配偶均异地（优待）")){
+            return base1;
+        }
+        if (conditionItems.contains("探望配偶")){
+            return base2;
+        }
+        if (conditionItems.contains("参加工作满20年以上") || conditionItems.contains("未婚探望父母")){
+            return base3;
+        }
+        if (conditionItems.contains("参加工作不满20年") || conditionItems.contains("已婚探望父母")){
+            return base4;
         }
         return base5;
     }
