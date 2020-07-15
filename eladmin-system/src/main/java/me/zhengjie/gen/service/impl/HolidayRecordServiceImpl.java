@@ -158,12 +158,13 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
                 Long thisUserWeight = calculateUserWeight(userName);
 //                Long minWeight = hitRecords.stream().mapToLong(h->calculateUserWeight(h.getUserName())).min().getAsLong();
                 //当天优先级最低的记录
-                HolidayRecord minRecord = hitRecords.get(0);
 
-                if(ObjectUtils.isEmpty(minRecord)){
+                if(CollectionUtils.isEmpty(hitRecords)){
                     sendMsg("提交失败，不满足部门在位率要求", MsgType.error, userPhone.toString());
                     throw new RuntimeException("提交失败，不满足部门在位率要求");
                 }
+
+                HolidayRecord minRecord = hitRecords.get(0);
 
                 Long minWeight = calculateUserWeight(minRecord.getUserName());
                 for(HolidayRecord hit : hitRecords){
