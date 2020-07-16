@@ -86,8 +86,8 @@ public class HolidayRecordController {
     }
 
     @GetMapping(value = "/canlendarInfo")
-    @Log("查询请假记录")
-    @ApiOperation("查询请假记录")
+    @Log("查询所有人请假记录")
+    @ApiOperation("查询所有人请假记录")
     public ResponseEntity<Object> getCanlendarInfoByUserName(String userName){
         return new ResponseEntity<>(holidayRecordService.getCanlendarInfoByUserName(userName),HttpStatus.OK);
     }

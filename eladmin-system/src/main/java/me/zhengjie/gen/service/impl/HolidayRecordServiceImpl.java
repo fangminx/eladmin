@@ -118,7 +118,7 @@ public class HolidayRecordServiceImpl implements HolidayRecordService {
         Long userPhone = resources.getPhone();
         DeptSimpleDto deptSimpleDto = deptService.findByName(deptName);
         Long allCount = deptSimpleDto.getCount();
-        Float preRate = deptSimpleDto.getPreRate();
+        Float preRate = 1 - deptSimpleDto.getPreRate();
         Long maxCount = Long.valueOf(CalculationUtil.multiply(allCount.toString(), preRate.toString(),0));
         Integer moveDay = configParamRepository.findByName("最大优先时间（天）").getValue();
         Long afterTime = DateUtil.getDateAfter(new Date(),moveDay).getTime();
